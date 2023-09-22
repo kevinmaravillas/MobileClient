@@ -30,8 +30,10 @@ const App = () => {
 }
 
 const styles = StyleSheet.create({
-  rooot: {
+  root: {
     flex: 1,
+    backgroundColor: '#B0B3B8',
+
   },
 });
 
