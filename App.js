@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import React from 'react';
+import SignInScreen from './src/screens/SignInScreen';
 
 // export default function App() {
 //   return (
@@ -8,7 +9,7 @@ import React from 'react';
 //       <Text>Hello</Text>
 //       <StatusBar style="auto" />
 //     </View>
-//   );
+//   );a
 // }
 
 // const styles = StyleSheet.create({
@@ -23,7 +24,7 @@ import React from 'react';
 const App = () => {
   return(
     <SafeAreaView style={styles.root}>
-      <Text>Hello</Text>
+      <SignInScreen></SignInScreen>
     </SafeAreaView>
   );
 }
