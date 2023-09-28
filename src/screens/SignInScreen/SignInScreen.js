@@ -1,5 +1,11 @@
 import React, {useState} from "react";
-import { View, Text, Image, StyleSheet, useWindowDimensions, Button} from "react-native";
+import { View,
+         Text, 
+         Image, 
+         StyleSheet, 
+         useWindowDimensions, 
+         Button,
+        TouchableOpacity} from "react-native";
 import Logo from '../../../assets/images/robotLogo.png';
 import CustomInput from "../../components/CustomInput/CustomInput";
 // import {useState} from "react";
@@ -10,6 +16,7 @@ const SignInScreen = () =>{
     const [Password, setPassword] = useState('');
 
     const {height} = useWindowDimensions();
+
 
 
     return(
@@ -33,11 +40,10 @@ const SignInScreen = () =>{
             />
 
             <Button
-                title='Sign In' 
-                onPress={() => console.log('Pressed')}
-                style={[styles.btn, {borderRadius: 20, borderColor: 'black', borderWidth: 2}]} 
-
+                title="Sign In"
+                // onPress={() => navigation.navigate(ClasificationPage)}
             />
+
 
 
         </View>
