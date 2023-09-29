@@ -1,14 +1,12 @@
 import React, {useState} from "react";
-import { View,
-         Text, 
+import { View, 
          Image, 
          StyleSheet, 
-         useWindowDimensions, 
-         Button,
-        TouchableOpacity} from "react-native";
+         useWindowDimensions,
+         ScrollView} from "react-native";
 import Logo from '../../../assets/images/robotLogo.png';
 import CustomInput from "../../components/CustomInput/CustomInput";
-// import {useState} from "react";
+import CustomButton from "../../components/CustomButton/CustomButton"
 
 
 const SignInScreen = () =>{
@@ -17,9 +15,20 @@ const SignInScreen = () =>{
 
     const {height} = useWindowDimensions();
 
+    const onSignInPress = () =>{
+        console.warn("Sign In");
+    }
 
+    const onForgotPasswordPress = () => {
+        console.warn("Forgot Password")
+    }
+
+    const onSignUpPress = () => {
+        console.warn("Creating a new account!")
+    }
 
     return(
+        <ScrollView>
         <View style={styles.root}>
             <Image 
                 source={Logo} 
@@ -37,16 +46,18 @@ const SignInScreen = () =>{
                 placeholder="Password"
                 value={Password}
                 setValue={setPassword}
+                secureTextEntry={true}
             />
 
-            <Button
-                title="Sign In"
-                // onPress={() => navigation.navigate(ClasificationPage)}
-            />
+            <CustomButton text="Sign In" onPress={onSignInPress}/>
+            <CustomButton text="Forgot password?" onPress={onForgotPasswordPress} type="Tertiary"/>
 
-
-
+            <CustomButton 
+                text="Dont have an account? Create one"
+                onPress={onSignUpPress}
+                type="Tertiary"/>
         </View>
+        </ScrollView>
     )
 }
 
@@ -55,21 +66,12 @@ const styles = StyleSheet.create({
     root:{
         alignItems: 'center',
         padding: 10,
-        
-
     },
     logo: {
         width : '20%',
         maxWidth: 300,
         maxHeight: 150
     },
-    btn: {
-        borderRadius: 20,
-        borderColor: 'black',
-        borderWidth: 2
-    },
-
-    
 });
 
 export default SignInScreen

@@ -2,29 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import React from 'react';
 import SignInScreen from './src/screens/SignInScreen';
-
-// export default function App() {
-//   return (
-//     <View style={styles.container}>
-//       <Text>Hello</Text>
-//       <StatusBar style="auto" />
-//     </View>
-//   );a
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+import SignUpScreen from './src/screens/SignUpScreen/SignUpScreen';
+import ConfirmEmailScreen from './src/screens/ConfirmEmailScreen';
 
 const App = () => {
   return(
     <SafeAreaView style={styles.root}>
-      <SignInScreen></SignInScreen>
+      {/* <SignInScreen/> */}
+      {/* <SignUpScreen/> */}
+      <ConfirmEmailScreen/>
     </SafeAreaView>
   );
 }
