@@ -7,7 +7,7 @@ import {
   useCameraPermissions,
   PermissionStatus,
 } from 'expo-image-picker';
-import OutlinedButtons from '../../components/OutlinedButton';
+import OutlinedButtons from '../../components/OutlinedButtons';
 
 
 const Index = () => {
