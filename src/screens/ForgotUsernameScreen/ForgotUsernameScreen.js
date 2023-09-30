@@ -8,38 +8,30 @@ import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
 
 
-const ConfirmEmailScreen = () =>{
-    const [Code, setCode] = useState('');
+const ForgotUsernameScreen = () =>{
+    const [Email, setEmail] = useState('');
     const navigation = useNavigation();
 
-    const onConfirmPress = () =>{
-        navigation.navigate('Home');
+    const onSendPress = () =>{
+        navigation.navigate('NewUsername');
     }
     const onSignInPress = () => {
         navigation.navigate('SignIn');
-    }
-    const onResendPress = () => {
-        console.warn('resend')
     }
 
     return(
         <ScrollView>
         <View style={styles.root}>
-            <Text style={styles.title}>Confirm your Email</Text>
+            <Text style={styles.title}>Reset your Username</Text>
 
             <CustomInput
-                placeholder="Enter the confirmation code"
-                value={Code}
-                setValue={setCode}
+                placeholder="Email"
+                value={Email}
+                setValue={setEmail}
             />
 
-            <CustomButton text="Confirm" onPress={onConfirmPress}/>
-            
-            <CustomButton 
-                text="Resend Code"
-                onPress={onResendPress}
-                type="Secondary"
-            />
+            <CustomButton text="Send" onPress={onSendPress}/>
+           
             <CustomButton 
                 text="Back to Sign In"
                 onPress={onSignInPress}
@@ -71,4 +63,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ConfirmEmailScreen
+export default ForgotUsernameScreen;

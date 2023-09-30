@@ -7,6 +7,7 @@ import { View,
 import Logo from '../../../assets/images/robotLogo.png';
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
+import { useNavigation } from "@react-navigation/native";
 
 
 const SignInScreen = () =>{
@@ -14,17 +15,19 @@ const SignInScreen = () =>{
     const [Password, setPassword] = useState('');
 
     const {height} = useWindowDimensions();
+    const navigation = useNavigation();
 
     const onSignInPress = () =>{
-        console.warn("Sign In");
+        //Validate User
+        navigation.navigate('Home');
     }
 
-    const onForgotPasswordPress = () => {
-        console.warn("Forgot Password")
+    const onForgotUsernamePress = () => {
+        navigation.navigate('ForgotUsername');
     }
 
     const onSignUpPress = () => {
-        console.warn("Creating a new account!")
+        navigation.navigate('SignUp');
     }
 
     return(
@@ -49,8 +52,15 @@ const SignInScreen = () =>{
                 secureTextEntry={true}
             />
 
-            <CustomButton text="Sign In" onPress={onSignInPress}/>
-            <CustomButton text="Forgot password?" onPress={onForgotPasswordPress} type="Tertiary"/>
+            <CustomButton 
+                text="Sign In"
+                onPress={onSignInPress}
+            />
+            <CustomButton 
+                text="Forgot Username?"
+                onPress={onForgotUsernamePress}
+                type="Tertiary"
+            />
 
             <CustomButton 
                 text="Dont have an account? Create one"

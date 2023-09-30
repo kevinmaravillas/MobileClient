@@ -5,6 +5,7 @@ import { View,
          ScrollView} from "react-native";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
+import { useNavigation } from "@react-navigation/native";
 
 
 const SignUpScreen = () =>{
@@ -12,12 +13,13 @@ const SignUpScreen = () =>{
     const [Email, setEmail] = useState('');
     const [Password, setPassword] = useState('');
     const [PasswordRepeat, setPasswordRepeat] = useState('');
+    const navigation = useNavigation();
 
     const onRegisterPress = () =>{
-        console.warn("Registering");
+        navigation.navigate('ConfirmEmail');
     }
     const onSignInPress = () => {
-        console.warn("Sign In")
+        navigation.navigate('SignIn');
     }
     const onTermsofUsePress = () => {
         console.warn("Terms Of Use")
