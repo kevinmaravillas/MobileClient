@@ -1,22 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Alert, Image } from 'react-native';
-import { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
+import React from "react";
+import { View, Text, StyleSheet, Alert, Image } from "react-native";
+import { useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   launchCameraAsync,
   useCameraPermissions,
   PermissionStatus,
-} from 'expo-image-picker';
-import OutlinedButtons from '../../components/OutlinedButtons';
-
+  launchImageLibraryAsync,
+  MediaTypeOptions,
+} from "expo-image-picker";
+import OutlinedButtons from "../../components/OutlinedButtons";
 
 const Index = () => {
   const [pickedImage, setPickedImage] = useState();
 
-  const [cameraPermissionInformation, requestPermission] =
+  const [cameraPermissionInformation, requestCameraPermission] =
+    useCameraPermissions();
+  const [galleryPermissionInformation, requestGalleryPermission] =
     useCameraPermissions();
 
-  async function verifyPermissions() {
+  async function verifyCameraPermissions() {
     if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
       const persmissionResponse = await requestPermission();
 
@@ -25,8 +28,26 @@ const Index = () => {
 
     if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
       Alert.alert(
-        'Insufficient Permissions',
-        'You need to grant camera permissions to use this app'
+        "Insufficient Permissions",
+        "You need to grant camera permissions to use this app"
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  async function verifyGalleryPermission() {
+    if (galleryPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const persmissionResponse = await requestPermission();
+
+      return persmissionResponse.granted;
+    }
+
+    if (galleryPermissionInformation.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        "Insufficient Permissions",
+        "You need to grant gallery permissions to use this app"
       );
       return false;
     }
@@ -35,13 +56,29 @@ const Index = () => {
   }
 
   async function takeImageHandler() {
-    const hasPermission = await verifyPermissions();
+    const hasPermission = await verifyCameraPermissions();
 
     if (!hasPermission) {
       return;
     }
 
     const image = await launchCameraAsync({
+      quality: 1,
+    });
+
+    setPickedImage(image.assets[0].uri);
+  }
+
+  async function uploadImageHandler() {
+    const hasPermission = await verifyGalleryPermission();
+
+    if (!hasPermission) {
+      return;
+    }
+
+    const image = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.All,
+      allowsEditing: true,
       quality: 1,
     });
 
@@ -63,6 +100,9 @@ const Index = () => {
           <OutlinedButtons icon="camera" onPress={takeImageHandler}>
             Take Image
           </OutlinedButtons>
+          <OutlinedButtons icon="camera" onPress={uploadImageHandler}>
+            Upload Image
+          </OutlinedButtons>
         </View>
       </View>
     </>
@@ -72,22 +112,21 @@ const Index = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#B0B3B8',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   imagePreview: {
     width: 350,
-    height: 400,
+    height: 300,
     marginVertical: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#6699ff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#6699ff",
     borderRadius: 4,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
 });
 
