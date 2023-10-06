@@ -6,13 +6,16 @@ import { View,
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
+import {useForm} from 'react-hook-form';
 
+const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
 
 const SignUpScreen = () =>{
-    const [Username, setUsername] = useState('');
-    const [Email, setEmail] = useState('');
-    const [Password, setPassword] = useState('');
-    const [PasswordRepeat, setPasswordRepeat] = useState('');
+
+    const {control, handleSubmit, watch}= useForm();
+
+    const pwd = watch('Password');
+
     const navigation = useNavigation();
 
     const onRegisterPress = () =>{
@@ -34,29 +37,40 @@ const SignUpScreen = () =>{
             <Text style={styles.title}>Create an account</Text>
 
             <CustomInput
+                name="Username"
+                control={control}
                 placeholder="Username"
-                value={Username}
-                setValue={setUsername}
+                rules={{required: 'Username is required'}}
             />
             <CustomInput
+                name="Email"
+                control={control}
                 placeholder="Email"
-                value={Email}
-                setValue={setEmail}
+                rules={{pattern: {value: EMAIL_REGEX, message: 'Email is invalid'}}}
             />
             <CustomInput
+                name="Password"
+                control={control}
                 placeholder="Password"
-                value={Password}
-                setValue={setPassword}
                 secureTextEntry={true}
+                rules={{required: 'Password is required', 
+                        minLength: {
+                            value: 8,
+                            message: 'Password should be at least 8 Characters long'
+                        }}}
             />
             <CustomInput
+                name="Password-Repeat"
+                control={control}
                 placeholder="Confirm Password"
-                value={PasswordRepeat}
-                setValue={setPasswordRepeat}
                 secureTextEntry={true}
+                rules={{
+                    validate: value => value == pwd || 'Password does not match'
+                }}
             />
 
-            <CustomButton text="Register" onPress={onRegisterPress}/>
+            <CustomButton text="Register" onPress={handleSubmit(onRegisterPress)}/>
+
             <Text style={styles.text}>
                 By registering, you confirm that you accept our{' '}
                 <Text style={styles.link} onPress={onTermsofUsePress}>

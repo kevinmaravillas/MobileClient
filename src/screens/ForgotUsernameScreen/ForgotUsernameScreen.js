@@ -6,13 +6,17 @@ import { View,
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
+import {useForm} from 'react-hook-form';
 
+const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
 
 const ForgotUsernameScreen = () =>{
-    const [Email, setEmail] = useState('');
+    const {control, handleSubmit} = useForm();
+
     const navigation = useNavigation();
 
-    const onSendPress = () =>{
+    const onSendPress = (data) =>{
+        console.warn(data);
         navigation.navigate('NewUsername');
     }
     const onSignInPress = () => {
@@ -25,12 +29,16 @@ const ForgotUsernameScreen = () =>{
             <Text style={styles.title}>Reset your Username</Text>
 
             <CustomInput
+                name="Email"
+                control={control}
                 placeholder="Email"
-                value={Email}
-                setValue={setEmail}
+                rules={{pattern: {value: EMAIL_REGEX, message: 'Email is invalid'}}}
             />
 
-            <CustomButton text="Send" onPress={onSendPress}/>
+            <CustomButton
+                text="Send"
+                onPress={handleSubmit(onSendPress)}
+            />
            
             <CustomButton 
                 text="Back to Sign In"

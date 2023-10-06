@@ -6,15 +6,17 @@ import { View,
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
+import {useForm} from "react-hook-form";
 
 
 const NewUsernameScreen = () =>{
-    const [Code, setCode] = useState('');
-    const [newUsername, setNewUsername] = useState('');
+
+    const {control, handleSubmit} = useForm();
 
     const navigation = useNavigation();
 
-    const onSubmitPress = () =>{
+    const onSubmitPress = (data) =>{
+        console.warn(data);
         navigation.navigate('Home');
     }
     const onSignInPress = () => {
@@ -27,20 +29,26 @@ const NewUsernameScreen = () =>{
             <Text style={styles.title}>Reset your Username</Text>
 
             <CustomInput
+                name="Code"
+                control={control}
                 placeholder="Code"
-                value={Code}
-                setValue={setCode}
+                rules={{
+                    required: 'Code is required'
+                }}
             />
 
             <CustomInput
+                name="NewUsername"
+                control={control}
                 placeholder="Enter your new Username"
-                value={newUsername}
-                setValue={setNewUsername}
+                rules={{
+                    required: 'New username is required'
+                }}
             />
 
             <CustomButton 
                 text="Submit"
-                onPress={onSubmitPress}
+                onPress={handleSubmit(onSubmitPress)}
             />
            
             <CustomButton 

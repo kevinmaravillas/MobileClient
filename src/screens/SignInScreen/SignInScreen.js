@@ -3,23 +3,46 @@ import { View,
          Image, 
          StyleSheet, 
          useWindowDimensions,
-         ScrollView} from "react-native";
+         ScrollView,
+         Alert,
+         TextInput} from "react-native";
 import Logo from '../../../assets/images/robotLogo.png';
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
+import {useForm, Controller} from 'react-hook-form';
+import { Auth } from "aws-amplify";
 
 
 const SignInScreen = () =>{
-    const [Username, setUsername] = useState('');
-    const [Password, setPassword] = useState('');
-
     const {height} = useWindowDimensions();
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
-    const onSignInPress = () =>{
+    const{
+        control,
+        handleSubmit,
+        formState: {errors}
+    }= useForm();
+
+    const onSignInPress = async(data) =>{
+        if(loading){
+            return;
+        }
+
+        setLoading(true);
+        try{
+            const response = await Auth.signIn(data.Username, data.Password);
+            console.log(response);
+
+        }catch(ex){
+            Alert.alert('Ooops', ex.message);
+        }
+        setLoading(false);
+
+
         //Validate User
-        navigation.navigate('Home');
+        // navigation.navigate('Home');
     }
 
     const onForgotUsernamePress = () => {
@@ -38,23 +61,24 @@ const SignInScreen = () =>{
                 style={[styles.logo, {height: height * 0.3}]} 
                 resizeMode="contain"
             />
-            {/* <Text>Hello</Text> */}
 
             <CustomInput
+                name="Username"
                 placeholder="Username"
-                value={Username}
-                setValue={setUsername}
+                control={control}
+                rules={{required: 'Username is required'}}
             />
             <CustomInput
+                name="Password"
                 placeholder="Password"
-                value={Password}
-                setValue={setPassword}
                 secureTextEntry={true}
+                control={control}
+                rules={{required: 'Password is required'}}
             />
 
             <CustomButton 
-                text="Sign In"
-                onPress={onSignInPress}
+                text={loading ? "Loading..." : "Sign In"}
+                onPress={handleSubmit(onSignInPress)}
             />
             <CustomButton 
                 text="Forgot Username?"
@@ -76,6 +100,7 @@ const styles = StyleSheet.create({
     root:{
         alignItems: 'center',
         padding: 10,
+        backgroundColor: 'grey'
     },
     logo: {
         width : '20%',
