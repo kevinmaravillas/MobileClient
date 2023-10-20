@@ -19,7 +19,8 @@
         },
         "signupAttributes": [
           "PREFERRED_USERNAME",
-          "EMAIL"
+          "EMAIL",
+          "NAME"
         ],
         "socialProviders": [],
         "usernameAttributes": [],

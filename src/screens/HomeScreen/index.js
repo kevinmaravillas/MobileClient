@@ -10,6 +10,7 @@ import {
   MediaTypeOptions,
 } from "expo-image-picker";
 import OutlinedButtons from "../../components/OutlinedButtons";
+import { Auth } from "aws-amplify";
 
 const Index = () => {
   const [pickedImage, setPickedImage] = useState();
@@ -91,6 +92,10 @@ const Index = () => {
     imagePreview = <Image style={styles.image} source={{ uri: pickedImage }} />;
   }
 
+  const signOut = () => {
+    Auth.signOut();
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -103,6 +108,17 @@ const Index = () => {
           <OutlinedButtons icon="camera" onPress={uploadImageHandler}>
             Upload Image
           </OutlinedButtons>
+          <Text
+            onPress={signOut}
+            style={{width: '100%',
+                    textAlign: 'center',
+                    color: '#A64444',
+                    marginTop: 'auto',
+                    marginVertical: 20,
+                    fontSize: 20}}
+          >
+            Sign Out
+          </Text>
         </View>
       </View>
     </>

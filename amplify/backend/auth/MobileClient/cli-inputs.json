@@ -3,7 +3,7 @@
   "cognitoConfig": {
     "identityPoolName": "testAuthIdentityPool",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "mobilef5d7c98c",
+    "resourceNameTruncated": "mobile7cc012f6",
     "userPoolName": "MobileClient",
     "autoVerifiedAttributes": [
       "email"
@@ -26,16 +26,17 @@
     ],
     "requiredAttributes": [
       "preferred_username",
-      "email"
+      "email",
+      "name"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [],
     "userpoolClientReadAttributes": [],
-    "userpoolClientLambdaRole": "Mobilef5d7c98c_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "Mobile7cc012f6_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "f5d7c98c",
+    "sharedId": "7cc012f6",
     "resourceName": "MobileClient",
     "authSelections": "identityPoolAndUserPool",
     "serviceName": "Cognito",
@@ -46,21 +47,6 @@
     "thirdPartyAuth": false,
     "authProviders": [],
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true,
-    "authRoleArn": {
-      "Fn::GetAtt": [
-        "AuthRole",
-        "Arn"
-      ]
-    },
-    "unauthRoleArn": {
-      "Fn::GetAtt": [
-        "UnauthRole",
-        "Arn"
-      ]
-    },
-    "breakCircularDependency": true,
-    "dependsOn": [],
-    "hostedUI": false
+    "useEnabledMfas": true
   }
 }

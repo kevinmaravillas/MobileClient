@@ -25,6 +25,7 @@ const SignInScreen = () =>{
         formState: {errors}
     }= useForm();
 
+    
     const onSignInPress = async(data) =>{
         if(loading){
             return;
@@ -33,20 +34,15 @@ const SignInScreen = () =>{
         setLoading(true);
         try{
             const response = await Auth.signIn(data.Username, data.Password);
-            console.log(response);
 
         }catch(ex){
             Alert.alert('Ooops', ex.message);
         }
         setLoading(false);
-
-
-        //Validate User
-        // navigation.navigate('Home');
     }
 
-    const onForgotUsernamePress = () => {
-        navigation.navigate('ForgotUsername');
+    const onForgotPasswordPress = () => {
+        navigation.navigate('ForgotPassword');
     }
 
     const onSignUpPress = () => {
@@ -81,8 +77,8 @@ const SignInScreen = () =>{
                 onPress={handleSubmit(onSignInPress)}
             />
             <CustomButton 
-                text="Forgot Username?"
-                onPress={onForgotUsernamePress}
+                text="Forgot Password?"
+                onPress={onForgotPasswordPress}
                 type="Tertiary"
             />
 

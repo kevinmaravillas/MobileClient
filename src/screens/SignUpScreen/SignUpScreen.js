@@ -2,11 +2,14 @@ import React, {useState} from "react";
 import { View,
          Text,
          StyleSheet,
-         ScrollView} from "react-native";
+         ScrollView,
+         Alert} from "react-native";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
 import {useForm} from 'react-hook-form';
+import { Auth } from "aws-amplify";
+import {useRoute} from '@react-navigation/native';
 
 const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
 
@@ -14,13 +17,29 @@ const SignUpScreen = () =>{
 
     const {control, handleSubmit, watch}= useForm();
 
-    const pwd = watch('Password');
+    const pwd = watch('password');
 
     const navigation = useNavigation();
 
-    const onRegisterPress = () =>{
-        navigation.navigate('ConfirmEmail');
+
+
+    const onRegisterPress = async(data) =>{
+        const {username, password, email, name} = data;
+        try{
+            await Auth.signUp({
+                username,
+                password,
+                attributes: {email, name, preferred_username: username}
+            });
+            navigation.navigate('ConfirmEmail', {username});
+        } catch(ex){
+            Alert.alert('Ooops', ex.message);
+        }
+
+    
     }
+
+
     const onSignInPress = () => {
         navigation.navigate('SignIn');
     }
@@ -35,21 +54,28 @@ const SignUpScreen = () =>{
         <ScrollView>
         <View style={styles.root}>
             <Text style={styles.title}>Create an account</Text>
+            
+            <CustomInput
+                name="name"
+                control={control}
+                placeholder="Name"
+                rules={{required: 'Name is required'}}
+            />
 
             <CustomInput
-                name="Username"
-                control={control}
+                name="username"
                 placeholder="Username"
+                control={control}
                 rules={{required: 'Username is required'}}
             />
             <CustomInput
-                name="Email"
+                name="email"
                 control={control}
                 placeholder="Email"
                 rules={{pattern: {value: EMAIL_REGEX, message: 'Email is invalid'}}}
             />
             <CustomInput
-                name="Password"
+                name="password"
                 control={control}
                 placeholder="Password"
                 secureTextEntry={true}

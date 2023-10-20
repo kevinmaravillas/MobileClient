@@ -2,23 +2,29 @@ import React, {useState} from "react";
 import { View,
          Text,
          StyleSheet,
-         ScrollView} from "react-native";
+         ScrollView,
+         Alert} from "react-native";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
 import {useForm} from 'react-hook-form';
+import { Auth } from "aws-amplify";
 
 const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
 
-const ForgotUsernameScreen = () =>{
+const ForgotPasswordScreen = () =>{
     const {control, handleSubmit} = useForm();
-
     const navigation = useNavigation();
 
-    const onSendPress = (data) =>{
-        console.warn(data);
-        navigation.navigate('NewUsername');
-    }
+    const onSendPress = async(data) =>{
+        try{
+            await Auth.forgotPassword(data.username);
+            navigation.navigate('NewPassword');
+        } catch (ex){
+            Alert.alert(ex.message);
+        }
+    };
+
     const onSignInPress = () => {
         navigation.navigate('SignIn');
     }
@@ -29,10 +35,10 @@ const ForgotUsernameScreen = () =>{
             <Text style={styles.title}>Reset your Username</Text>
 
             <CustomInput
-                name="Email"
+                name="username"
                 control={control}
-                placeholder="Email"
-                rules={{pattern: {value: EMAIL_REGEX, message: 'Email is invalid'}}}
+                placeholder="username"
+                rules={'username is invalid'}
             />
 
             <CustomButton
@@ -71,4 +77,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ForgotUsernameScreen;
+export default ForgotPasswordScreen;

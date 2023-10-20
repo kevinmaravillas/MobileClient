@@ -2,22 +2,26 @@ import React, {useState} from "react";
 import { View,
          Text,
          StyleSheet,
-         ScrollView} from "react-native";
+         ScrollView,
+         Alert} from "react-native";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton"
 import { useNavigation } from "@react-navigation/native";
 import {useForm} from "react-hook-form";
+import { Auth } from "aws-amplify";
 
 
-const NewUsernameScreen = () =>{
-
+const NewPasswordScreen = () =>{
     const {control, handleSubmit} = useForm();
-
     const navigation = useNavigation();
 
-    const onSubmitPress = (data) =>{
-        console.warn(data);
-        navigation.navigate('Home');
+    const onSubmitPress = async(data) =>{
+        try{
+            await Auth.forgotPasswordSubmit(data.username, data.code, data.password);
+            navigation.navigate('SignIn');
+        } catch (ex){
+            Alert.alert(ex.message);
+        }
     }
     const onSignInPress = () => {
         navigation.navigate('SignIn');
@@ -26,10 +30,19 @@ const NewUsernameScreen = () =>{
     return(
         <ScrollView>
         <View style={styles.root}>
-            <Text style={styles.title}>Reset your Username</Text>
+            <Text style={styles.title}>Reset your Password</Text>
 
             <CustomInput
-                name="Code"
+                name="username"
+                control={control}
+                placeholder="Username"
+                rules={{
+                    required: 'Username is required'
+                }}
+            />
+
+            <CustomInput
+                name="code"
                 control={control}
                 placeholder="Code"
                 rules={{
@@ -38,11 +51,11 @@ const NewUsernameScreen = () =>{
             />
 
             <CustomInput
-                name="NewUsername"
+                name="password"
                 control={control}
-                placeholder="Enter your new Username"
+                placeholder="Enter your new Password"
                 rules={{
-                    required: 'New username is required'
+                    required: 'A new password is required'
                 }}
             />
 
@@ -82,4 +95,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default NewUsernameScreen;
+export default NewPasswordScreen;
