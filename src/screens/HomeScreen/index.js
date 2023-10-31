@@ -1,89 +1,55 @@
-import React from "react";
-import { View, Text, StyleSheet, Alert, Image } from "react-native";
-import { useState } from "react";
+// React/React Native
+import React, { useState } from "react";
+import { StyleSheet, View, Alert, Image, Text } from "react-native";
+// Expo
 import { StatusBar } from "expo-status-bar";
+import * as ImagePicker from "expo-image-picker";
+// import * as FileSystem from "expo-file-system";
+// Firebase
+// import { firebase, db } from "../config";
+// import { push, ref, set } from "firebase/database";
+// Getting UUID
+import "react-native-get-random-values";
+// import { v4 as uuidv4 } from "uuid";
+// UI
 import {
-  launchCameraAsync,
-  useCameraPermissions,
-  PermissionStatus,
-  launchImageLibraryAsync,
-  MediaTypeOptions,
-} from "expo-image-picker";
-import OutlinedButtons from "../../components/OutlinedButtons";
+  OutlinedButtons,
+  SignoutButton,
+  SubmitButton,
+} from "../../components/Camera/OutlinedButtons";
+import ImageLabels from "../../components/Camera/ImageLabels";
+
 import { Auth } from "aws-amplify";
 
 const Index = () => {
-  const [pickedImage, setPickedImage] = useState();
-
-  const [cameraPermissionInformation, requestCameraPermission] =
-    useCameraPermissions();
-  const [galleryPermissionInformation, requestGalleryPermission] =
-    useCameraPermissions();
-
-  async function verifyCameraPermissions() {
-    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-      const persmissionResponse = await requestPermission();
-
-      return persmissionResponse.granted;
-    }
-
-    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
-      Alert.alert(
-        "Insufficient Permissions",
-        "You need to grant camera permissions to use this app"
-      );
-      return false;
-    }
-
-    return true;
-  }
-
-  async function verifyGalleryPermission() {
-    if (galleryPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-      const persmissionResponse = await requestPermission();
-
-      return persmissionResponse.granted;
-    }
-
-    if (galleryPermissionInformation.status === PermissionStatus.DENIED) {
-      Alert.alert(
-        "Insufficient Permissions",
-        "You need to grant gallery permissions to use this app"
-      );
-      return false;
-    }
-
-    return true;
-  }
-
+  // Storing Images
+  const [pickedImage, setPickedImage] = useState(null);
+  // Uploading Alerts
+  const [uploading, setUploading] = useState(false);
+  // Stored Labels
+  const [selectedLabel, setSelectedLabel] = useState("");
+  // Handling Camera Functionality
   async function takeImageHandler() {
-    const hasPermission = await verifyCameraPermissions();
-
-    if (!hasPermission) {
-      return;
-    }
-
-    const image = await launchCameraAsync({
+    const image = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
       quality: 1,
     });
-
-    setPickedImage(image.assets[0].uri);
+    if (!image.canceled) {
+      setPickedImage(image.assets[0].uri);
+    }
   }
 
-  async function uploadImageHandler() {
-    const hasPermission = await verifyGalleryPermission();
-
-    if (!hasPermission) {
-      return;
-    }
-
-    const image = await launchImageLibraryAsync({
-      mediaTypes: MediaTypeOptions.All,
+  // Handling Gallery Functionality
+  async function galleryImageHandler() {
+    const image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
     });
 
-    setPickedImage(image.assets[0].uri);
+    if (!image.canceled) {
+      setPickedImage(image.assets[0].uri);
+    }
   }
 
   let imagePreview = <Text>No image taken yet</Text>;
@@ -99,27 +65,49 @@ const Index = () => {
   return (
     <>
       <View style={styles.container}>
+        <View style={styles.button}>
+          <SignoutButton onPress={signOut}>Sign out</SignoutButton>
+        </View>
+
         <StatusBar style="auto" />
         <View>
+          {/* Icons Container */}
+          <View style={styles.icons}>
+            {/* Camera Button */}
+            <OutlinedButtons
+              icon="camera"
+              onPress={takeImageHandler}
+            ></OutlinedButtons>
+            <View style={{ width: 20 }} />
+            {/* Gallery Button */}
+            <OutlinedButtons
+              icon="images-outline"
+              onPress={galleryImageHandler}
+            ></OutlinedButtons>
+          </View>
+          {/* Image Preview */}
           <View style={styles.imagePreview}>{imagePreview}</View>
-          <OutlinedButtons icon="camera" onPress={takeImageHandler}>
-            Take Image
-          </OutlinedButtons>
-          <OutlinedButtons icon="camera" onPress={uploadImageHandler}>
-            Upload Image
-          </OutlinedButtons>
-          <Text
-            onPress={signOut}
-            style={{width: '100%',
-                    textAlign: 'center',
-                    color: '#A64444',
-                    marginTop: 'auto',
-                    marginVertical: 20,
-                    fontSize: 20}}
-          >
-            Sign Out
-          </Text>
+          {/* Dropdown Menu */}
+          <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
+          {/* Buttons Container */}
+          <View style={styles.submitBtn}>
+            {/* Upadte Button */}
+            {/* <SubmitButton >Update</SubmitButton> */}
+            {/* <View style={{ width: 50 }} /> */}
+            {/* Classify Button */}
+            <SubmitButton>Classify</SubmitButton>
+            <View style={{ width: 50 }} />
+            {/* Upload Button */}
+            <SubmitButton onPress={() => addData(selectedLabel)}>
+              Upload
+            </SubmitButton>
+          </View>
         </View>
+        {/* <View style={styles.signout}>
+          <Text onPress={signOut} style={styles.signoutTxt}>
+            Sign out
+          </Text>
+        </View> */}
       </View>
     </>
   );
@@ -127,15 +115,16 @@ const Index = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginVertical: "15%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor:"grey"
+  },
+  label: {
+    width: 300,
   },
   imagePreview: {
     width: 350,
-    height: 300,
-    marginVertical: 8,
+    height: 350,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#6699ff",
@@ -144,6 +133,21 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+  },
+  submitBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icons: {
+    justifyContent: "center",
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+  button: {
+    marginBottom: 15,
+    marginLeft: 30,
+    alignSelf: "flex-start",
   },
 });
 
