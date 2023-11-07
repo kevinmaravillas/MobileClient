@@ -4,10 +4,6 @@ import { StyleSheet, View, Alert, Image, Text } from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
-// import * as FileSystem from "expo-file-system";
-// Firebase
-// import { firebase, db } from "../config";
-// import { push, ref, set } from "firebase/database";
 // Getting UUID
 import "react-native-get-random-values";
 // import { v4 as uuidv4 } from "uuid";
@@ -25,9 +21,9 @@ const Index = () => {
   // Storing Images
   const [pickedImage, setPickedImage] = useState(null);
   // Uploading Alerts
-  const [uploading, setUploading] = useState(false);
+  // const [uploading, setUploading] = useState(false);
   // Stored Labels
-  const [selectedLabel, setSelectedLabel] = useState("");
+  const [selectedLabel, setSelectedLabel] = useState(0);
   // Handling Camera Functionality
   async function takeImageHandler() {
     const image = await ImagePicker.launchCameraAsync({
@@ -98,9 +94,7 @@ const Index = () => {
             <SubmitButton>Classify</SubmitButton>
             <View style={{ width: 50 }} />
             {/* Upload Button */}
-            <SubmitButton onPress={() => addData(selectedLabel)}>
-              Upload
-            </SubmitButton>
+            <SubmitButton>Upload</SubmitButton>
           </View>
         </View>
         {/* <View style={styles.signout}>

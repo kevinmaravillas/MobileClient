@@ -4,10 +4,10 @@ import { Dropdown } from "react-native-element-dropdown";
 import { SubmitButton } from "./OutlinedButtons";
 
 const ImageLabels = ({ onLabelSelect }) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(0);
   const [customLabel, setCustomLabel] = useState("");
   const [data, setData] = useState([
-    {},
+    { label: "Select Item" },
     { label: "Dog", value: "Dog" },
     { label: "Cat", value: "Cat" },
   ]);
