@@ -1,6 +1,6 @@
 // React/React Native
 import React, { useState } from "react";
-import { StyleSheet, View, Alert, Image, Text } from "react-native";
+import { StyleSheet, View, Alert, Image, Text, TextInput } from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
@@ -18,20 +18,31 @@ import ImageLabels from "../../components/Camera/ImageLabels";
 import { Auth } from "aws-amplify";
 
 const Index = () => {
-  // Storing Images
+  // Stores images
   const [pickedImage, setPickedImage] = useState(null);
-  // Uploading Alerts
-  // const [uploading, setUploading] = useState(false);
-  // Stored Labels
+  // Stores labels
   const [selectedLabel, setSelectedLabel] = useState(0);
+  // Stores model
+  // const [model, setModel] = useState("");
+  // Loading process
+  // const [loading, setLoading] = useState(false);
+  // Stores confidence number
+  const [confidenceNumber, setConfidenceNumber] = useState(null);
+  // Stores predictions
+  // const [predictions, setPredictions] = useState([]);
+  // Stores maxIndex of preditions
+  // const [maxIndex, setMaxIndex] = useState(-1);
+
   // Handling Camera Functionality
   async function takeImageHandler() {
     const image = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
     });
+
     if (!image.canceled) {
-      setPickedImage(image.assets[0].uri);
+      setPickedImage(image.assets[0]);
     }
   }
 
@@ -44,14 +55,58 @@ const Index = () => {
     });
 
     if (!image.canceled) {
-      setPickedImage(image.assets[0].uri);
+      setPickedImage(image.assets[0]);
+    }
+  }
+
+  async function sendImageToServer(pickedImage) {
+    const serverUrl = "http://54.215.250.216:5000/uploadV2";
+    try {
+      const filename = pickedImage.uri.split("/").pop();
+      const formData = new FormData();
+      formData.append("file", {
+        uri: uri,
+        name: filename,
+        type: "image/jpeg",
+      });
+
+      // Match server requirements
+      formData.append("Label", selectedLabel);
+      formData.append("confidence", confidenceNumber);
+      formData.append("id", filename);
+      formData.append("imageUrl", filename);
+
+      const response = await fetch(serverUrl, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Response Status:", response.status);
+      const responseText = await response.text();
+      console.log("Response Text:", responseText);
+
+      if (response.ok) {
+        // Handle a successful response from the server
+        Alert.alert("Upload Success", "Image sent to the server successfully");
+      } else {
+        // Handle an error response from the server
+        Alert.alert("Upload Failed", "Failed to send image to the server");
+      }
+    } catch (error) {
+      // Handle network-related errors
+      Alert.alert("Network error:", String(error));
     }
   }
 
   let imagePreview = <Text>No image taken yet</Text>;
 
   if (pickedImage) {
-    imagePreview = <Image style={styles.image} source={{ uri: pickedImage }} />;
+    imagePreview = (
+      <Image style={styles.image} source={{ uri: pickedImage.uri }} />
+    );
   }
 
   const signOut = () => {
@@ -85,6 +140,15 @@ const Index = () => {
           <View style={styles.imagePreview}>{imagePreview}</View>
           {/* Dropdown Menu */}
           <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
+          {/* Confidence Number Input */}
+          <View style={{ alignItems: "center" }}>
+            <TextInput
+              placeholder="Confidence Number"
+              keyboardType="numeric"
+              value={confidenceNumber}
+              onChangeText={(value) => setConfidenceNumber(value)}
+            />
+          </View>
           {/* Buttons Container */}
           <View style={styles.submitBtn}>
             {/* Upadte Button */}
@@ -94,14 +158,11 @@ const Index = () => {
             <SubmitButton>Classify</SubmitButton>
             <View style={{ width: 50 }} />
             {/* Upload Button */}
-            <SubmitButton>Upload</SubmitButton>
+            <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
+              Upload
+            </SubmitButton>
           </View>
         </View>
-        {/* <View style={styles.signout}>
-          <Text onPress={signOut} style={styles.signoutTxt}>
-            Sign out
-          </Text>
-        </View> */}
       </View>
     </>
   );
@@ -129,6 +190,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   submitBtn: {
+    paddingTop: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
