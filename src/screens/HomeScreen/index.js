@@ -103,9 +103,9 @@ const Index = () => {
         console.log(prediction);
 
         const threshold = 0.5;
-        const result = prediction > threshold ? "dog" : "cat";
-        console.log(result);
-        setPredictions(result);
+        // const result = prediction > threshold ? "dog" : "cat";
+        // console.log(result);
+        // setPredictions(result);
 
         setLoading(false);
       } catch (error) {
