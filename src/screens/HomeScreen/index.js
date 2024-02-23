@@ -1,19 +1,35 @@
 // React/React Native
-import React, { useState } from "react";
-import { StyleSheet, View, Alert, Image, Text, TextInput } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Alert,
+  Image,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
+
 // Getting UUID
 import "react-native-get-random-values";
 // import { v4 as uuidv4 } from "uuid";
-// UI
+
+// Tensorflow
+import * as tf from "@tensorflow/tfjs";
+import * as tfjs from "@tensorflow/tfjs-react-native";
+
+// Others
 import {
   OutlinedButtons,
   SignoutButton,
   SubmitButton,
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
+import { loadModel } from "../../../assets/model/model";
 
 import { Auth } from "aws-amplify";
 
@@ -23,22 +39,37 @@ const Index = () => {
   // Stores labels
   const [selectedLabel, setSelectedLabel] = useState(0);
   // Stores model
-  // const [model, setModel] = useState("");
+  const [model, setModel] = useState(null);
   // Loading process
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   // Stores confidence number
-  const [confidenceNumber, setConfidenceNumber] = useState(null);
+  // const [confidenceNumber, setConfidenceNumber] = useState(null);
   // Stores predictions
-  // const [predictions, setPredictions] = useState([]);
+  const [predictions, setPredictions] = useState(null);
   // Stores maxIndex of preditions
   // const [maxIndex, setMaxIndex] = useState(-1);
 
+  useEffect(() => {
+    const loadTFModel = async () => {
+      const loadedModel = await loadModel();
+      setModel(loadedModel);
+    };
+    loadTFModel();
+  }, []);
+
   // Handling Camera Functionality
   async function takeImageHandler() {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      return Alert.alert("No Access to Camera");
+    }
+
     const image = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
+      aspect: [1, 1],
     });
 
     if (!image.canceled) {
@@ -52,6 +83,7 @@ const Index = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
+      aspect: [1, 1],
     });
 
     if (!image.canceled) {
@@ -59,45 +91,110 @@ const Index = () => {
     }
   }
 
-  async function sendImageToServer(pickedImage) {
-    const serverUrl = "http://54.215.250.216:5000/uploadV2";
-    try {
-      const filename = pickedImage.uri.split("/").pop();
-      const formData = new FormData();
-      formData.append("file", {
-        uri: uri,
-        name: filename,
-        type: "image/jpeg",
-      });
+  // Classifies the inputted image
+  async function classifyImage(image) {
+    if (!pickedImage) {
+      Alert.alert("No image selected", "Please upload an image");
+    } else {
+      setLoading(true);
 
-      // Match server requirements
-      formData.append("Label", selectedLabel);
-      formData.append("confidence", confidenceNumber);
-      formData.append("id", filename);
-      formData.append("imageUrl", filename);
+      try {
+        const prediction = await getPrediction(image);
+        console.log(prediction);
 
-      const response = await fetch(serverUrl, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        const threshold = 0.5;
+        const result = prediction > threshold ? "dog" : "cat";
+        console.log(result);
+        setPredictions(result);
 
-      console.log("Response Status:", response.status);
-      const responseText = await response.text();
-      console.log("Response Text:", responseText);
-
-      if (response.ok) {
-        // Handle a successful response from the server
-        Alert.alert("Upload Success", "Image sent to the server successfully");
-      } else {
-        // Handle an error response from the server
-        Alert.alert("Upload Failed", "Failed to send image to the server");
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
       }
-    } catch (error) {
-      // Handle network-related errors
-      Alert.alert("Network error:", String(error));
+    }
+  }
+
+  // Calculates the prediction
+  async function getPrediction(image) {
+    try {
+      const actions = [{ resize: { width: 160, height: 160 } }];
+      const resizePhoto = ImageManipulator.manipulateAsync(image.uri, actions);
+      // Resize the photo to a specific size
+      const { uri } = await resizePhoto;
+
+      // Read the resized photo as a base64 string
+      const imgB64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Encode the base64 string to a buffer
+      const imgBuffer = tf.util.encodeString(imgB64, "base64").buffer;
+
+      // Create a Uint8Array from buffer
+      const raw = new Uint8Array(imgBuffer);
+      // Decode the JPEG imaged into a Tensorflow tensor
+      const tensor = tfjs.decodeJpeg(raw);
+      // Convert the tensor data to float32
+      const tensorToFloat = tensor.toFloat();
+
+      // Expand the dimensions of the tensor to match the model input shape
+      const tensorExpandedDims = tensorToFloat.expandDims(0);
+      const prediction = await model.predict(tensorExpandedDims).data();
+
+      return prediction;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function sendImageToServer(pickedImage) {
+    if (!pickedImage) {
+      Alert.alert("No image selected", "Please upload an image");
+    } else {
+      Alert.alert("Loading", "Uploading Image...");
+      const serverUrl = "http://54.215.250.216:5000/uploadV2";
+      try {
+        const filename = pickedImage.uri.split("/").pop();
+        const formData = new FormData();
+        formData.append("file", {
+          uri: pickedImage.uri,
+          name: filename,
+          type: "image/jpeg",
+        });
+
+        // Match server requirements
+        formData.append("Label", selectedLabel);
+        // formData.append("confidence", confidenceNumber);
+        formData.append("id", filename);
+        formData.append("imageUrl", filename);
+
+        const response = await fetch(serverUrl, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log("Response Status:", response.status);
+        const responseText = await response.text();
+        console.log("Response Text:", responseText);
+
+        if (response.ok) {
+          // Handle a successful response from the server
+          Alert.alert(
+            "Upload Success",
+            "Image sent to the server successfully"
+          );
+        } else {
+          // Handle an error response from the server
+          Alert.alert("Upload Failed", "Failed to send image to the server");
+        }
+      } catch (error) {
+        // Handle network-related errors
+        Alert.alert("Network error:", String(error));
+      }
     }
   }
 
@@ -141,26 +238,39 @@ const Index = () => {
           {/* Dropdown Menu */}
           <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
           {/* Confidence Number Input */}
-          <View style={{ alignItems: "center" }}>
+          {/* <View style={{ alignItems: "center" }}>
             <TextInput
               placeholder="Confidence Number"
               keyboardType="numeric"
               value={confidenceNumber}
               onChangeText={(value) => setConfidenceNumber(value)}
             />
-          </View>
+          </View> */}
           {/* Buttons Container */}
           <View style={styles.submitBtn}>
             {/* Upadte Button */}
             {/* <SubmitButton >Update</SubmitButton> */}
             {/* <View style={{ width: 50 }} /> */}
             {/* Classify Button */}
-            <SubmitButton>Classify</SubmitButton>
+            <SubmitButton onPress={() => classifyImage(pickedImage)}>
+              Classify
+            </SubmitButton>
             <View style={{ width: 50 }} />
             {/* Upload Button */}
             <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
               Upload
             </SubmitButton>
+          </View>
+          <View style={{ paddingTop: 15 }}></View>
+          <View style={styles.predictionContainer}>
+            <Text style={styles.predictionText}>
+              Prediction:{" "}
+              {loading ? (
+                <ActivityIndicator size="large" color="#999999" />
+              ) : (
+                predictions
+              )}
+            </Text>
           </View>
         </View>
       </View>
@@ -204,6 +314,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: 30,
     alignSelf: "flex-start",
+  },
+  predictionContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    flexDirection: "row",
+  },
+  predictionText: {
+    fontSize: 25,
+    fontWeight: "bold",
   },
 });
 

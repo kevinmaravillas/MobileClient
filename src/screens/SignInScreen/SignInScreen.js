@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   root: {
     alignItems: "center",
-    padding: 10,
+    padding: 40,
   },
   logo: {
     width: "20%",
