@@ -32,6 +32,9 @@ import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
 
 import { Auth } from "aws-amplify";
+import DropDownPicker from 'react-native-dropdown-picker';
+
+
 
 const Index = () => {
   // Stores images
@@ -49,9 +52,14 @@ const Index = () => {
   // Stores maxIndex of preditions
   // const [maxIndex, setMaxIndex] = useState(-1);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentValue, setCurrentValue] = useState('Current model');
+
   useEffect(() => {
     const loadTFModel = async () => {
       const loadedModel = await loadModel();
+
+      //model select
       setModel(loadedModel);
     };
     loadTFModel();
@@ -198,6 +206,14 @@ const Index = () => {
     }
   }
 
+  const items = [
+    {label: 'Initial Model', value: 'Initial model'},
+    {label: 'Current Model', value: 'Current model'},
+    {label: 'Newest Model', value: 'Newest model'},
+  ]
+
+
+
   let imagePreview = <Text>No image taken yet</Text>;
 
   if (pickedImage) {
@@ -251,15 +267,30 @@ const Index = () => {
             {/* Upadte Button */}
             {/* <SubmitButton >Update</SubmitButton> */}
             {/* <View style={{ width: 50 }} /> */}
+            
             {/* Classify Button */}
             <SubmitButton onPress={() => classifyImage(pickedImage)}>
               Classify
             </SubmitButton>
-            <View style={{ width: 50 }} />
+            <View style={{ width: 20 }} />
             {/* Upload Button */}
             <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
               Upload
             </SubmitButton>
+            <View style={{ width: 20 }} />
+            <View>
+            {/* change Model dropdown list */}
+            <DropDownPicker 
+            items = {items} 
+            open ={isOpen} 
+            setOpen = {() => setIsOpen(!isOpen)}
+            value = {currentValue}
+            setValue={(val) => setCurrentValue(val)}
+            maxHeight ={100}
+            autoScroll
+            style = {{width: 160}}
+            />
+          </View>
           </View>
           <View style={{ paddingTop: 15 }}></View>
           <View style={styles.predictionContainer}>
