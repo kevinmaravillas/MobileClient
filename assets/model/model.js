@@ -1,9 +1,9 @@
 import * as tf from "@tensorflow/tfjs";
-import currentValue from '../../src/screens/HomeScreen/index.js'
+//import currentValue from '../../src/screens/HomeScreen/index.js'
 import startmodel from './model.json';
 import oldmodel from './Oldmodel.json';
 
-export const loadModel = async () => {
+export const loadModel = async (currentValue) => {
   await tf.ready();
 
   if(currentValue == 'Initial Model'){
