@@ -208,12 +208,6 @@ const Index = () => {
     }
   }
 
-  const items = [
-    {label: 'Initial Model', value: 'Initial model'},
-    {label: 'Current Model', value: 'Current model'},
-    {label: 'Newest Model', value: 'Newest model'},
-  ]
-
 
 
   let imagePreview = <Text>No image taken yet</Text>;
