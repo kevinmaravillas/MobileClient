@@ -1,10 +1,9 @@
 import * as tf from "@tensorflow/tfjs";
 
 export const loadModel = async () => {
+  const modeljson = await require("./model.json");
   await tf.ready();
-  const model = await tf.loadGraphModel(
-    "https://cs3.calstatela.edu/~cs4962stu01/model/model.json"
-  );
+  const model = await tf.loadGraphModel(modeljson);
   console.log("Model loaded.");
   return model;
 };
