@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import items from '.../src/screens/HomeScreen/index.js'
+import items from '../../src/screens/HomeScreen/index.js'
 import startmodel from './model.json';
 import oldmodel from './Oldmodel.json';
 
