@@ -36,6 +36,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 
 
+import DropDownPicker from 'react-native-dropdown-picker';
+
 const Index = () => {
   // Stores images
   const [pickedImage, setPickedImage] = useState(null);
@@ -225,6 +227,12 @@ const Index = () => {
   const signOut = () => {
     Auth.signOut();
   };
+
+  const items = [
+    {label: 'Initial Model', value: 'Initial model'},
+    {label: 'Current Model', value: 'Current model'},
+    {label: 'Newest Model', value: 'Newest model'},
+  ]
 
   return (
     <>
