@@ -34,10 +34,6 @@ import { loadModel } from "../../../assets/model/model";
 import { Auth } from "aws-amplify";
 import DropDownPicker from 'react-native-dropdown-picker';
 
-
-
-import DropDownPicker from 'react-native-dropdown-picker';
-
 const Index = () => {
   // Stores images
   const [pickedImage, setPickedImage] = useState(null);
