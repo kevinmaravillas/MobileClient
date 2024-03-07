@@ -51,7 +51,7 @@ const Index = () => {
   // const [maxIndex, setMaxIndex] = useState(-1);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState('Newest model');
+  const [currentValue, setCurrentValue] = useState('Old model');
 
   useEffect(() => {
     const loadTFModel = async () => {
