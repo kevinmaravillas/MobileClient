@@ -31,8 +31,8 @@ import {
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
 
-import { Auth } from "aws-amplify";
-import DropDownPicker from 'react-native-dropdown-picker';
+
+import RNFS from 'react-native-fs';
 
 const Index = () => {
   // Stores images
@@ -50,12 +50,27 @@ const Index = () => {
   // Stores maxIndex of preditions
   // const [maxIndex, setMaxIndex] = useState(-1);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState('Old Model');
+  const [downloadsFolder, setDownloadsFolder] = useState('');
+  const [documentsFolder, setDocumentsFolder] = useState('');
+  const [externalDirectory, setExternalDirectory] = useState('');
+  const [files, setFiles] = useState([]);
+
+  const getFileContent = async (path) => {
+    const reader = await RNFS.readDir(path);
+    setFiles(reader);
+  };
 
   useEffect(() => {
+
+
+    setDownloadsFolder(RNFS.DownloadDirectoryPath);
+    setDocumentsFolder(RNFS.DocumentDirectoryPath);
+    setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
+    getFileContent(RNFS.DocumentDirectoryPath);
+
+
     const loadTFModel = async () => {
-      const loadedModel = await loadModel('Old Model');
+      const loadedModel = await loadModel();
 
       //model select
       setModel(loadedModel);
@@ -275,20 +290,6 @@ const Index = () => {
             <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
               Upload
             </SubmitButton>
-            <View style={{ width: 20 }} />
-            <View>
-            {/* change Model dropdown list */}
-            <DropDownPicker 
-            items = {items} 
-            open ={isOpen} 
-            setOpen = {() => setIsOpen(!isOpen)}
-            value = {currentValue}
-            setValue={(val) => setCurrentValue(val)}
-            maxHeight ={100}
-            autoScroll
-            style = {{width: 160}}
-            />
-          </View>
           </View>
           <View style={{ paddingTop: 15 }}></View>
           <View style={styles.predictionContainer}>

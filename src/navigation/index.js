@@ -56,7 +56,6 @@ const Navigation = () => {
               <Stack.Screen name='NewPassword' component={NewPasswordScreen}/>
               <Stack.Screen name="SignUp" component={SignUpScreen}/>
               <Stack.Screen name="ConfirmEmail" component={ConfirmEmailScreen}/>
-              {/* <Stack.Screen name="ModelSelect" component={ModelSelect}/> */}
             </>
           )}
 
