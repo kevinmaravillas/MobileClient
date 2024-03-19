@@ -32,7 +32,8 @@ import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
 
 
-import RNFS from 'react-native-fs';
+//import RNFS from 'react-native-fs';
+const RNFS = require('react-native-fs');
 
 const Index = () => {
   // Stores images
@@ -50,9 +51,9 @@ const Index = () => {
   // Stores maxIndex of preditions
   // const [maxIndex, setMaxIndex] = useState(-1);
 
-  const [downloadsFolder, setDownloadsFolder] = useState('');
-  const [documentsFolder, setDocumentsFolder] = useState('');
-  const [externalDirectory, setExternalDirectory] = useState('');
+  // const [downloadsFolder, setDownloadsFolder] = useState('');
+  // const [documentsFolder, setDocumentsFolder] = useState('');
+  // const [externalDirectory, setExternalDirectory] = useState('');
   const [files, setFiles] = useState([]);
 
   const getFileContent = async (path) => {
@@ -63,14 +64,14 @@ const Index = () => {
   useEffect(() => {
 
 
-    setDownloadsFolder(RNFS.DownloadDirectoryPath);
-    setDocumentsFolder(RNFS.DocumentDirectoryPath);
-    setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
+    // setDownloadsFolder(RNFS.DownloadDirectoryPath);
+    // setDocumentsFolder(RNFS.DocumentDirectoryPath);
+    // setExternalDirectory(RNFS.ExternalStorageDirectoryPath);
     getFileContent(RNFS.DocumentDirectoryPath);
 
 
     const loadTFModel = async () => {
-      const loadedModel = await loadModel();
+      const loadedModel = await loadModel(files);
 
       //model select
       setModel(loadedModel);

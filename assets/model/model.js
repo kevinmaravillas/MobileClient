@@ -1,8 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
-import {useState, useEffect} from 'react';
-import RNFS from 'react-native-fs';
 
-export const loadModel = async () => {
+
+export const loadModel = async (files) => {
   await tf.ready();
 
   // const modelPath = '/path/assets/model/model1/model.json';
@@ -20,18 +19,18 @@ export const loadModel = async () => {
   //   return model;
   // }
 
-  // const model = await tf.loadLayersModel(handler);
-  // console.log("Old Model loaded.");
-  // return model;
+  //const model = await tf.loadLayersModel(files);
+  console.log(files);
+  console.log("Old Model loaded.");
 
   const model = await tf.loadGraphModel(
     "https://cs3.calstatela.edu/~cs4962stu01/model/model.json"
   );
   console.log("Model loaded.");
   //download this model and save it.
-  const saveResult = await model.save('localstorage://my-model-1');
-  console.log("Model saved.");
-  console.log(saveResult);
+  //const saveResult = await model.save('localstorage://my-model-1');
+  //console.log("Model saved.");
+  //console.log(saveResult);
 
   return model;
 };
