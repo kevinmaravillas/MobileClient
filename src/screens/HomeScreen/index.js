@@ -20,8 +20,8 @@ import "react-native-get-random-values";
 import * as jpeg from "jpeg-js";
 
 // Tensorflow
-import * as tf from "@tensorflow/tfjs";
-import * as tfjs from "@tensorflow/tfjs-react-native";
+import * as tfNode from "@tensorflow/tfjs-node";
+
 
 // Others
 import {
@@ -49,6 +49,7 @@ const Index = () => {
   // Stores predictions
   const [predictedClass, setPredictedClass] = useState(null);
   const [classLabels, setClassLabels] = useState(null);
+  const [currentValue, setCurrentValue] = useState("Current Model");
 
   useEffect(() => {
     const loadTFModel = async () => {
@@ -62,6 +63,12 @@ const Index = () => {
     loadTFModel();
     getClassLabels();
   }, []);
+
+  const modelVersions = [
+    { version: "old", label: "Old Model" },
+    { version: "current", label: "Current Model" },
+    { version: "new", label: "New Model" },
+  ];
 
   // Handling Camera Functionality
   async function takeImageHandler() {
@@ -145,16 +152,16 @@ const Index = () => {
     }
 
     // Transform the RGB pixel data into a tensor
-    const img = tf.tensor3d(buffer, [width, height, 3]);
+    const img = tfNode.tensor3d(buffer, [width, height, 3]);
 
     // Resize the image tensor to the desired dimensions
-    const resizedImg = tf.image.resizeBilinear(img, [160, 160]);
+    const resizedImg = tfNode.image.resizeBilinear(img, [160, 160]);
 
     // Add a fourth batch dimension to the tensor
     const expandedImg = resizedImg.expandDims(0);
 
     // Normalize the RGB values to the range -1 to +1
-    return expandedImg.toFloat().div(tf.scalar(255).sub(tf.scalar(1)));
+    return expandedImg.toFloat().div(tfNode.scalar(255).sub(tfNode.scalar(1)));
   }
 
   async function getPrediction(image) {
@@ -169,6 +176,7 @@ const Index = () => {
       const predictedClassIndex = probabilities[0].indexOf(
         Math.max(...probabilities[0])
       );
+      console.log(predictedClassIndex);
       // Get the class name using the class index
       const predictedClassName = classLabels[predictedClassIndex];
       // Get the confidence score for the predicted class
@@ -318,7 +326,7 @@ const Index = () => {
             </SubmitButton>
           </View>
           <View style={{ paddingTop: 15 }}></View>
-          <View style={styles.predictionContainer}>
+          {/* <View style={styles.predictionContainer}>
             <Text style={styles.predictionText}>
               Prediction:{" "}
               {loading ? (
@@ -333,6 +341,15 @@ const Index = () => {
               ) : (
                 confidenceNumber
               )}
+            </Text>
+          </View> */}
+          {/* test part */}
+          <View>
+            <Text>
+              {" "}
+              Downloads Folder:{" "}
+              {FileSystem.documentDirectory +
+                "assets/model/web_model/model.json/"}
             </Text>
           </View>
         </View>
@@ -379,10 +396,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   predictionContainer: {
-    justifyContent: "center",
-    alignItems: "center",
     marginBottom: 10,
-    flexDirection: "row",
   },
   predictionText: {
     fontSize: 20,
