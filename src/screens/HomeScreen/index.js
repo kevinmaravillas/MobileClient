@@ -7,12 +7,13 @@ import {
   Image,
   Text,
   ActivityIndicator,
+  Button,
 } from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import * as ImageManipulator from "expo-image-manipulator";
+import * as Sharing from "expo-sharing";
 
 // Getting UUID
 import "react-native-get-random-values";
@@ -20,9 +21,7 @@ import "react-native-get-random-values";
 import * as jpeg from "jpeg-js";
 
 // Tensorflow
-import * as tfNode from "@tensorflow/tfjs-node";
-
-
+import * as tf from "@tensorflow/tfjs";
 // Others
 import {
   OutlinedButtons,
@@ -32,6 +31,7 @@ import {
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
 import { imageLabels } from "../../../assets/imageLabels/imageClasses";
+// var RNFS = require('react-native-fs');
 
 import { Auth } from "aws-amplify";
 
@@ -64,11 +64,11 @@ const Index = () => {
     getClassLabels();
   }, []);
 
-  const modelVersions = [
-    { version: "old", label: "Old Model" },
-    { version: "current", label: "Current Model" },
-    { version: "new", label: "New Model" },
-  ];
+  // const modelVersions = [
+  //   { version: "old", label: "Old Model" },
+  //   { version: "current", label: "Current Model" },
+  //   { version: "new", label: "New Model" },
+  // ];
 
   // Handling Camera Functionality
   async function takeImageHandler() {
@@ -152,16 +152,16 @@ const Index = () => {
     }
 
     // Transform the RGB pixel data into a tensor
-    const img = tfNode.tensor3d(buffer, [width, height, 3]);
+    const img = tf.tensor3d(buffer, [width, height, 3]);
 
     // Resize the image tensor to the desired dimensions
-    const resizedImg = tfNode.image.resizeBilinear(img, [160, 160]);
+    const resizedImg = tf.image.resizeBilinear(img, [160, 160]);
 
     // Add a fourth batch dimension to the tensor
     const expandedImg = resizedImg.expandDims(0);
 
     // Normalize the RGB values to the range -1 to +1
-    return expandedImg.toFloat().div(tfNode.scalar(255).sub(tfNode.scalar(1)));
+    return expandedImg.toFloat().div(tf.scalar(255).sub(tf.scalar(1)));
   }
 
   async function getPrediction(image) {
@@ -262,6 +262,47 @@ const Index = () => {
     }
   }
 
+  async function download() {
+    const filename = "model.json";
+    const result = await FileSystem.downloadAsync(
+      "https://cs3.calstatela.edu/~cs4962stu01/test_model/",
+      FileSystem.documentDirectory + filename
+    );
+
+    console.log(result);
+
+    saveFile(result.uri, filename, result.headers["Content-Type"]);
+  }
+
+  async function saveFile(uri, filename, mimetype) {
+    if (Platform.OS === "android") {
+      const permissions =
+        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+      if (permissions.granted) {
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        await FileSystem.StorageAccessFramework.createFileAsync(
+          permissions.directoryUri,
+          filename,
+          mimetype
+        )
+          .then(async (uri) => {
+            await FileSystem.writeAsStringAsync(uri, base64, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+          })
+          .catch((e) => console.log(e));
+      } else {
+        Sharing.shareAsync(uri);
+      }
+    } else {
+      Sharing.shareAsync(uri);
+    }
+  }
+
   let imagePreview = <Text>No image taken yet</Text>;
 
   if (pickedImage) {
@@ -345,12 +386,12 @@ const Index = () => {
           </View> */}
           {/* test part */}
           <View>
-            <Text>
+            {/* <Text>
               {" "}
               Downloads Folder:{" "}
-              {FileSystem.documentDirectory +
-                "assets/model/web_model/model.json/"}
-            </Text>
+              {RNFS.DocumentDirectoryPath}
+            </Text> */}
+            <Button title="Download" onPress={download} />
           </View>
         </View>
       </View>
