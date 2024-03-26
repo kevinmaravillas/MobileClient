@@ -316,7 +316,7 @@ const Index = () => {
             </SubmitButton>
           </View>
           <View style={{ paddingTop: 15 }}></View>
-          {/* <View style={styles.predictionContainer}>
+          <View style={styles.predictionContainer}>
             <Text style={styles.predictionText}>
               Prediction:{" "}
               {loading ? (
@@ -332,7 +332,7 @@ const Index = () => {
                 confidenceNumber
               )}
             </Text>
-          </View> */}
+          </View>
           {/* test part */}
         </View>
       </View>
