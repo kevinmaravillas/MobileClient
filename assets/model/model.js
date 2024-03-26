@@ -1,47 +1,12 @@
 import * as tf from "@tensorflow/tfjs";
-<<<<<<< Updated upstream
-
-
-export const loadModel = async (files) => {
-  await tf.ready();
-
-  // const modelPath = '/path/assets/model/model1/model.json';
-  // const handler = tf.io.fileSystem(modelPath);
-
-  // if(currentValue == 'Initial Model'){
-  //   const model = await tf.loadLayersModel('file://MobileClient/assets/model/model1/model.json');
-=======
 import { Platform } from "react-native";
 export const loadModel = async () => {
   // if (currentValue == "Initial Model") {
   //   const model = await tf.loadGraphModel(startmodel);
->>>>>>> Stashed changes
   //   console.log("Initial Model loaded.");
   //   return model;
   // }
 
-<<<<<<< Updated upstream
-  // if(currentValue == 'Old Model'){
-  //   const model = await tf.loadLayersModel('file://MobileClient/assets/model/model1/model.json');
-  //   console.log("Old Model loaded.");
-  //   return model;
-  // }
-
-  //const model = await tf.loadLayersModel(files);
-  console.log(files);
-  console.log("Old Model loaded.");
-
-  const model = await tf.loadGraphModel(
-    "https://cs3.calstatela.edu/~cs4962stu01/model/model.json"
-  );
-  console.log("Model loaded.");
-  //download this model and save it.
-  //const saveResult = await model.save('localstorage://my-model-1');
-  //console.log("Model saved.");
-  //console.log(saveResult);
-
-  return model;
-=======
   // if (currentValue == "Old Model") {
   //   try {
   //     const modeljson = require("./web_model/model.json");
@@ -119,14 +84,13 @@ export const loadModel = async () => {
       console.log("Model loaded.");
       console.log(model);
 
-      const save = await model.save('downloads://my-model');
-      console.log("Model saved.");
-      console.log(save);
+      // const save = await model.save('downloads://my-model');
+      // console.log("Model saved.");
+      // console.log(save);
        return model;
     } 
     catch (error) {
       console.log("save error:" + error);
     }
 
->>>>>>> Stashed changes
 };
