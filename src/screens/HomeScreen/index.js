@@ -62,6 +62,7 @@ const Index = () => {
   };
 
   useEffect(() => {
+<<<<<<< Updated upstream
 
 
     // setDownloadsFolder(RNFS.DownloadDirectoryPath);
@@ -70,12 +71,23 @@ const Index = () => {
     getFileContent(RNFS.DocumentDirectoryPath);
 
 
+=======
+    
+>>>>>>> Stashed changes
     const loadTFModel = async () => {
       const loadedModel = await loadModel(files);
 
       //model select
       setModel(loadedModel);
     };
+<<<<<<< Updated upstream
+=======
+
+    const getClassLabels = async () => {
+      const loadedLabels = await imageLabels();
+      setClassLabels(loadedLabels);
+    };
+>>>>>>> Stashed changes
     loadTFModel();
   }, []);
 
@@ -302,6 +314,18 @@ const Index = () => {
                 predictions
               )}
             </Text>
+<<<<<<< Updated upstream
+=======
+          </View>
+          {/* test part */}
+          <View>
+            {/* <Text>
+              {" "}
+              Downloads Folder:{" "}
+              {RNFS.DocumentDirectoryPath}
+            </Text> */}
+            <Button title="Download" onPress={download} />
+>>>>>>> Stashed changes
           </View>
         </View>
       </View>
