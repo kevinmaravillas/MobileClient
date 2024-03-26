@@ -62,7 +62,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    
+
     const loadTFModel = async () => {
       const loadedModel = await loadModel(files);
 
