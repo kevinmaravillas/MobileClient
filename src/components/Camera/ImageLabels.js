@@ -8,8 +8,6 @@ const ImageLabels = ({ onLabelSelect }) => {
   const [customLabel, setCustomLabel] = useState("");
   const [data, setData] = useState([
     { label: "Select Item" },
-    { label: "Dog", value: "Dog" },
-    { label: "Cat", value: "Cat" },
   ]);
   const addCustomLabel = () => {
     if (customLabel && !data.find((item) => item.label === customLabel)) {

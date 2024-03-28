@@ -8,21 +8,19 @@ import {
   Text,
   ActivityIndicator,
   ScrollView,
+  Button,
 } from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import * as ImageManipulator from "expo-image-manipulator";
 
 // Getting UUID
 import "react-native-get-random-values";
 // import { v4 as uuidv4 } from "uuid";
+import * as jpeg from "jpeg-js";
 
 // Tensorflow
 import * as tf from "@tensorflow/tfjs";
-import * as tfjs from "@tensorflow/tfjs-react-native";
-
 // Others
 import {
   OutlinedButtons,
@@ -31,6 +29,8 @@ import {
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
+import { imageLabels } from "../../../assets/imageLabels/imageClasses";
+
 import { Auth } from "aws-amplify";
 
 // Selecting models
@@ -48,18 +48,22 @@ const Index = () => {
   // Loading process
   const [loading, setLoading] = useState(false);
   // Stores confidence number
-  // const [confidenceNumber, setConfidenceNumber] = useState(null);
+  const [confidenceNumber, setConfidenceNumber] = useState(null);
   // Stores predictions
-  const [predictions, setPredictions] = useState(null);
-  // Stores maxIndex of preditions
-  // const [maxIndex, setMaxIndex] = useState(-1);
+  const [predictedClass, setPredictedClass] = useState(null);
+  const [classLabels, setClassLabels] = useState(null);
 
   useEffect(() => {
     const loadTFModel = async () => {
       const loadedModel = await loadModel();
       setModel(loadedModel);
     };
+    const getClassLabels = async () => {
+      const loadedLabels = await imageLabels();
+      setClassLabels(loadedLabels);
+    };
     loadTFModel();
+    getClassLabels();
   }, []);
 
   // Handling Camera Functionality
@@ -104,13 +108,8 @@ const Index = () => {
       setLoading(true);
 
       try {
-        const prediction = await getPrediction(image);
-        console.log(prediction);
-
-        const threshold = 0.5;
-        // const result = prediction > threshold ? "dog" : "cat";
-        // console.log(result);
-        // setPredictions(result);
+        const result = await getPrediction(image);
+        console.log(result);
 
         setLoading(false);
       } catch (error) {
@@ -120,34 +119,90 @@ const Index = () => {
     }
   }
 
-  // Calculates the prediction
+  async function imageToTensor(image) {
+    // Fetch the image data from the provided URI
+    const response = await fetch(image.uri, {}, { isBinary: true });
+    // Fetch the raw binary data of the image
+    const rawImageData = await response.arrayBuffer();
+
+    // Decode the raw image data using a JPEG decoder
+    // Specify that the decoded data should be returned as a Uint8Array
+    const { width, height, data } = jpeg.decode(rawImageData, {
+      Uint8Array: true,
+    });
+
+    // Create a new Uint8Array to hold RGB pixel data (3 channels per pixel)
+    const buffer = new Uint8Array(width * height * 3);
+    let offset = 0;
+    // Loop through the buffer array in steps of 3 (for each RGB value)
+    for (let i = 0; i < buffer.length; i += 3) {
+      // Copy the color channel from data array to buffer array
+      // Copy the red channel value
+      buffer[i] = data[offset];
+      // Copy the green channel value
+      buffer[i + 1] = data[offset + 1];
+      // Copy the blue channel value
+      buffer[i + 2] = data[offset + 2];
+      // Move to the next pixel by skipping the alpha channel (RGBA format)
+      offset += 4;
+    }
+
+    // Transform the RGB pixel data into a tensor
+    const img = tf.tensor3d(buffer, [width, height, 3]);
+
+    // Resize the image tensor to the desired dimensions
+    const resizedImg = tf.image.resizeBilinear(img, [160, 160]);
+
+    // Add a fourth batch dimension to the tensor
+    const expandedImg = resizedImg.expandDims(0);
+
+    // Normalize the RGB values to the range -1 to +1
+    return expandedImg.toFloat().div(tf.scalar(255).sub(tf.scalar(1)));
+  }
+
   async function getPrediction(image) {
     try {
-      const actions = [{ resize: { width: 160, height: 160 } }];
-      const resizePhoto = ImageManipulator.manipulateAsync(image.uri, actions);
-      // Resize the photo to a specific size
-      const { uri } = await resizePhoto;
+      const source = { uri: image.uri };
+      const imageTensor = await imageToTensor(source);
+      const prediction = await model.predict(imageTensor);
+      console.log(prediction);
+      const probabilities = await prediction.array();
 
-      // Read the resized photo as a base64 string
-      const imgB64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      // Find the index of the class with the highest probability
+      const predictedClassIndex = probabilities[0].indexOf(
+        Math.max(...probabilities[0])
+      );
+      console.log(predictedClassIndex);
+      // Get the class name using the class index
+      const predictedClassName = classLabels[predictedClassIndex];
+      // Get the confidence score for the predicted class
+      const confidence = probabilities[0][predictedClassIndex];
+      // Round the confidence score and convert it to a percentage
+      const roundedConfidence = Math.round(confidence * 100) + "%";
 
-      // Encode the base64 string to a buffer
-      const imgBuffer = tf.util.encodeString(imgB64, "base64").buffer;
+      setPredictedClass(predictedClassName);
+      setConfidenceNumber(roundedConfidence);
 
-      // Create a Uint8Array from buffer
-      const raw = new Uint8Array(imgBuffer);
-      // Decode the JPEG imaged into a Tensorflow tensor
-      const tensor = tfjs.decodeJpeg(raw);
-      // Convert the tensor data to float32
-      const tensorToFloat = tensor.toFloat();
-
-      // Expand the dimensions of the tensor to match the model input shape
-      const tensorExpandedDims = tensorToFloat.expandDims(0);
-      const prediction = await model.predict(tensorExpandedDims).data();
-
-      return prediction;
+      // const sortedProbabilities = probabilities[0]
+      //   .slice()
+      //   .sort((a, b) => b - a);
+      // const top3Predictions = sortedProbabilities
+      //   .slice(0, 3)
+      //   .map((probability) => {
+      //     const predictedClassIndex = probabilities[0].indexOf(probability);
+      //     const predictedClassName = classLabels[predictedClassIndex];
+      //     const confidence = probability;
+      //     const roundedConfidence = Math.round(confidence * 100) + "%";
+      //     return {
+      //       className: predictedClassName,
+      //       confidence: roundedConfidence,
+      //     };
+      //   });
+      // console.log(top3Predictions);
+      return {
+        "Class Name": predictedClassName,
+        "Confidence Number": roundedConfidence,
+      };
     } catch (e) {
       console.log(e);
     }
@@ -294,7 +349,40 @@ const Index = () => {
                 )}
               </Text>
             </View>
+          {/* Buttons Container */}
+          <View style={styles.submitBtn}>
+            {/* Upadte Button */}
+            {/* <SubmitButton >Update</SubmitButton> */}
+            {/* <View style={{ width: 50 }} /> */}
+            {/* Classify Button */}
+            <SubmitButton onPress={() => classifyImage(pickedImage)}>
+              Classify
+            </SubmitButton>
+            <View style={{ width: 50 }} />
+            {/* Upload Button */}
+            <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
+              Upload
+            </SubmitButton>
           </View>
+          <View style={{ paddingTop: 15 }}></View>
+          <View style={styles.predictionContainer}>
+            <Text style={styles.predictionText}>
+              Prediction:{" "}
+              {loading ? (
+                <ActivityIndicator size="large" color="#999999" />
+              ) : (
+                predictedClass
+              )}
+              {"\n"}
+              Confidence:{" "}
+              {loading ? (
+                <ActivityIndicator size="large" color="#999999" />
+              ) : (
+                confidenceNumber
+              )}
+            </Text>
+          </View>
+          {/* test part */}
         </View>
       </ScrollView>
     </>
@@ -339,13 +427,10 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   predictionContainer: {
-    justifyContent: "center",
-    alignItems: "center",
     marginBottom: 10,
-    flexDirection: "row",
   },
   predictionText: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
   },
   root:{
