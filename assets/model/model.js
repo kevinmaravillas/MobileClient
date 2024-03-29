@@ -8,10 +8,13 @@ export const loadModel = async () => {
     );
     console.log("Model loaded.");
 
+    //save model.
     const saved = await model.save('file:///path/to/my-model');
+    //error: [Error: Cannot find any save handlers for URL 'file:///path/to/my-model']
 
     console.log("model saved");
     return saved;
+
   } catch (e) {
     console.log(e);
   }
