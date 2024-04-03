@@ -1,4 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from "expo-file-system";
 
 export const loadModel = async () => {
   try {
@@ -8,14 +10,18 @@ export const loadModel = async () => {
     );
     console.log("Model loaded.");
 
-    //save model.
-    const saved = await model.save('file:///path/to/my-model');
-    //error: [Error: Cannot find any save handlers for URL 'file:///path/to/my-model']
+    // Save model to local storage
+    const modelPath = `${FileSystem.documentDirectory}/my-model`;
+    const saved = await model.save(modelPath);
+    console.log("Model saved to:", modelPath);
 
-    console.log("model saved");
+    // Save model path to AsyncStorage
+    // const saved  = await AsyncStorage.setItem('custom-model-path', model);
+    // console.log("Model path saved to AsyncStorage.");
+
     return saved;
-
   } catch (e) {
-    console.log(e);
+    console.error("Error:", e);
+    return null;
   }
 };
