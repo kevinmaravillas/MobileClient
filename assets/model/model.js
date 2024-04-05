@@ -15,13 +15,13 @@ import RNFS from 'react-native-fs';
 export const loadModel = async () => {
   try {
     await tf.ready();
-    // const model = await tf.loadGraphModel(
-    //   "https://cs3.calstatela.edu/~cs4962stu01/test_model/model.json"
-    // );
-    // console.log("Model loaded.");
-
-    const model = await tf.loadGraphModel(`${RNFS.DocumentDirectoryPath}/test_model/model.json`);
+    const model = await tf.loadGraphModel(
+      "https://cs3.calstatela.edu/~cs4962stu01/test_model/model.json"
+    );
     console.log("Model loaded.");
+
+    // const model = await tf.loadGraphModel(`${RNFS.DocumentDirectoryPath}/test_model/model.json`);
+    // console.log("Model loaded.");
 
     // // Save model to local storage
     // const modelPath = `${FileSystem.documentDirectory}/my-model`;
