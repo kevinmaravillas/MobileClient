@@ -2,7 +2,6 @@ import * as tf from "@tensorflow/tfjs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from "expo-file-system";
 import {bundleResourceIO, decodeJpeg} from '@tensorflow/tfjs-react-native'
-import RNFS from 'react-native-fs';
 
 // const modelJSON = require('./test_model/model.json');
 // const weightPaths = [
@@ -19,6 +18,7 @@ export const loadModel = async () => {
       "https://cs3.calstatela.edu/~cs4962stu01/test_model/model.json"
     );
     console.log("Model loaded.");
+    console.log(model);
 
     // const model = await tf.loadGraphModel(`${RNFS.DocumentDirectoryPath}/test_model/model.json`);
     // console.log("Model loaded.");
