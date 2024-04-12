@@ -33,6 +33,14 @@ import { loadModel } from "../../../assets/model/model";
 
 import { Auth } from "aws-amplify";
 
+<<<<<<< Updated upstream
+=======
+// Selecting models
+import { useNavigation } from "@react-navigation/native";
+import { useForm } from "react-hook-form";
+import CustomButton from "../../components/CustomButton/CustomButton";
+
+>>>>>>> Stashed changes
 const Index = () => {
   // Stores images
   const [pickedImage, setPickedImage] = useState(null);
@@ -54,7 +62,12 @@ const Index = () => {
       const loadedModel = await loadModel();
       setModel(loadedModel);
     };
+<<<<<<< Updated upstream
     loadTFModel();
+=======
+    // loadTFModel();
+    getClassLabels();
+>>>>>>> Stashed changes
   }, []);
 
   // Handling Camera Functionality
@@ -210,6 +223,7 @@ const Index = () => {
     Auth.signOut();
   };
 
+<<<<<<< Updated upstream
   return (
     <>
       <View style={styles.container}>
@@ -239,6 +253,53 @@ const Index = () => {
           <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
           {/* Confidence Number Input */}
           {/* <View style={{ alignItems: "center" }}>
+=======
+  // Selection button
+  const { control, handleSubmit } = useForm();
+  const navigation = useNavigation();
+  const onSendPress = () => {
+    navigation.navigate("SelectorScreen");
+  };
+
+  return (
+    <>
+      <ScrollView>
+        <View style={styles.container}>
+          {/* Select model button */}
+          <View style={styles.root}>
+            <CustomButton
+              text="Select model"
+              onPress={handleSubmit(onSendPress)}
+            />
+          </View>
+
+          {/* <View style={styles.button}>
+            <SignoutButton onPress={signOut}>Sign out</SignoutButton>
+          </View> */}
+
+          <StatusBar style="auto" />
+          <View>
+            {/* Icons Container */}
+            <View style={styles.icons}>
+              {/* Camera Button */}
+              <OutlinedButtons
+                icon="camera"
+                onPress={takeImageHandler}
+              ></OutlinedButtons>
+              <View style={{ width: 20 }} />
+              {/* Gallery Button */}
+              <OutlinedButtons
+                icon="images-outline"
+                onPress={galleryImageHandler}
+              ></OutlinedButtons>
+            </View>
+            {/* Image Preview */}
+            <View style={styles.imagePreview}>{imagePreview}</View>
+            {/* Dropdown Menu */}
+            <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
+            {/* Confidence Number Input */}
+            {/* <View style={{ alignItems: "center" }}>
+>>>>>>> Stashed changes
             <TextInput
               placeholder="Confidence Number"
               keyboardType="numeric"
@@ -246,6 +307,7 @@ const Index = () => {
               onChangeText={(value) => setConfidenceNumber(value)}
             />
           </View> */}
+<<<<<<< Updated upstream
           {/* Buttons Container */}
           <View style={styles.submitBtn}>
             {/* Upadte Button */}
@@ -272,6 +334,69 @@ const Index = () => {
               )}
             </Text>
           </View>
+=======
+            {/* Buttons Container */}
+            <View style={styles.submitBtn}>
+              {/* Upadte Button */}
+              {/* <SubmitButton >Update</SubmitButton> */}
+              {/* <View style={{ width: 50 }} /> */}
+              {/* Classify Button */}
+              <SubmitButton onPress={() => classifyImage(pickedImage)}>
+                Classify
+              </SubmitButton>
+              <View style={{ width: 50 }} />
+              {/* Upload Button */}
+              <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
+                Upload
+              </SubmitButton>
+            </View>
+            <View style={{ paddingTop: 15 }}></View>
+            <View style={styles.predictionContainer}>
+              {/* <Text style={styles.predictionText}>
+                Prediction:{" "}
+                {loading ? (
+                  <ActivityIndicator size="large" color="#999999" />
+                ) : (
+                  predictions
+                )}
+              </Text> */}
+            </View>
+            {/* Buttons Container */}
+            <View style={styles.submitBtn}>
+              {/* Upadte Button */}
+              {/* <SubmitButton >Update</SubmitButton> */}
+              {/* <View style={{ width: 50 }} /> */}
+              {/* Classify Button */}
+              <SubmitButton onPress={() => classifyImage(pickedImage)}>
+                Classify
+              </SubmitButton>
+              <View style={{ width: 50 }} />
+              {/* Upload Button */}
+              <SubmitButton onPress={() => sendImageToServer(pickedImage)}>
+                Upload
+              </SubmitButton>
+            </View>
+            <View style={{ paddingTop: 15 }}></View>
+            <View style={styles.predictionContainer}>
+              <Text style={styles.predictionText}>
+                Prediction:{" "}
+                {loading ? (
+                  <ActivityIndicator size="large" color="#999999" />
+                ) : (
+                  predictedClass
+                )}
+                {"\n"}
+                Confidence:{" "}
+                {loading ? (
+                  <ActivityIndicator size="large" color="#999999" />
+                ) : (
+                  confidenceNumber
+                )}
+              </Text>
+            </View>
+            {/* test part */}
+          </View>
+>>>>>>> Stashed changes
         </View>
       </View>
     </>
@@ -325,6 +450,14 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
   },
+<<<<<<< Updated upstream
+=======
+  root: {
+    marginBottom: 5,
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+>>>>>>> Stashed changes
 });
 
 export default Index;

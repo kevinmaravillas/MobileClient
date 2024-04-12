@@ -10,11 +10,11 @@ import NewPasswordScreen from '../screens/NewPasswordScreen';
 import HomeScreen from '../screens/HomeScreen';
 import { Auth, Hub } from 'aws-amplify';
 
-const Stack = createNativeStackNavigator();
+
 
 const Navigation = () => {
-  const [user, setUser] = useState(undefined);
 
+<<<<<<< Updated upstream
   const checkUser = async() => {
     try{
       const authUser = await Auth.currentAuthenticatedUser({bypassCache: true});
@@ -58,6 +58,19 @@ const Navigation = () => {
               <Stack.Screen name="ConfirmEmail" component={ConfirmEmailScreen}/>
             </>
           )}
+=======
+const Stack = createNativeStackNavigator();
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="SelectorScreen"  component={SelectorScreen}/>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+>>>>>>> Stashed changes
 
             
             
