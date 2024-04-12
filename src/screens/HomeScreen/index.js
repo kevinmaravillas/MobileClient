@@ -54,16 +54,23 @@ const Index = () => {
   const [classLabels, setClassLabels] = useState(null);
 
   useEffect(() => {
+
+
+    //load model
     const loadTFModel = async () => {
       const loadedModel = await loadModel();
       setModel(loadedModel);
     };
+
+    //load label
     const getClassLabels = async () => {
       const loadedLabels = await imageLabels();
       setClassLabels(loadedLabels);
     };
+
     loadTFModel();
     getClassLabels();
+    
   }, []);
 
   // Handling Camera Functionality

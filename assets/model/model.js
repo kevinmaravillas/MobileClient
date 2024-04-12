@@ -18,17 +18,20 @@ export const loadModel = async () => {
       "https://cs3.calstatela.edu/~cs4962stu01/test_model/model.json"
     );
     console.log("Model loaded.");
-    
-    // const saved = await model.save('file:///path/to/my-model');
-    const saved = await model.save(asyncStorageIO('customs'));
+    // const model = tf.sequential();
+    // model.add(tf.layers.dense({units: 5, inputShape: [1]}));
+    // model.add(tf.layers.dense({units: 1}));
+    // model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+    // console.log("Model loaded.");
+
+    await model.save(asyncStorageIO('customs'));
     console.log("model saved");
 
-    // const final = await tf.loadGraphModelSync(saved);
-    // console.log(final == model);
+    const final = await tf.loadLayersModel(asyncStorageIO('customs'));
 
-
-    return model;
+    return final;
   } catch (e) {
-    console.log(e);
+    console.error("Error:", e);
+    return null;
   }
 };
