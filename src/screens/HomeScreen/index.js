@@ -150,7 +150,7 @@ const Index = () => {
     const img = tf.tensor3d(buffer, [width, height, 3]);
 
     // Resize the image tensor to the desired dimensions
-    const resizedImg = tf.image.resizeBilinear(img, [160, 160]);
+    const resizedImg = tf.image.resizeBilinear(img, [224, 224]);
 
     // Add a fourth batch dimension to the tensor
     const expandedImg = resizedImg.expandDims(0);
@@ -211,7 +211,7 @@ const Index = () => {
       Alert.alert("No image selected", "Please upload an image");
     } else {
       Alert.alert("Loading", "Uploading Image...");
-      const serverUrl = "http://54.215.250.216:5000/uploadV2";
+      const serverUrl = "http://54.215.250.216:5000/images/unverified";
       try {
         const filename = pickedImage.uri.split("/").pop();
         const formData = new FormData();
@@ -223,8 +223,6 @@ const Index = () => {
 
         // Match server requirements
         formData.append("Label", selectedLabel);
-        // formData.append("confidence", confidenceNumber);
-        formData.append("id", filename);
         formData.append("imageUrl", filename);
 
         const response = await fetch(serverUrl, {
