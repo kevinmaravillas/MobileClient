@@ -7,6 +7,7 @@ import {
   Image,
   Text,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 // Expo
 import { StatusBar } from "expo-status-bar";
@@ -31,9 +32,10 @@ import {
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
+import { SaveModel } from "../../../assets/model/saveModel";
 import { imageLabels } from "../../../assets/imageLabels/imageClasses";
 
-import { Auth } from "aws-amplify";
+// import { Auth } from "aws-amplify";
 
 const Index = () => {
   // Stores images
@@ -51,15 +53,17 @@ const Index = () => {
   const [classLabels, setClassLabels] = useState(null);
 
   useEffect(() => {
-    // const loadTFModel = async () => {
-    //   const loadedModel = await loadModel();
-    //   setModel(loadedModel);
-    // };
+    SaveModel();
+    const loadTFModel = async () => {
+      const version = "New";
+      const loadedModel = await loadModel(version);
+      setModel(loadedModel);
+    };
     const getClassLabels = async () => {
       const loadedLabels = await imageLabels();
       setClassLabels(loadedLabels);
     };
-    // loadTFModel();
+    loadTFModel();
     getClassLabels();
   }, []);
 
@@ -99,16 +103,18 @@ const Index = () => {
 
   // Classifies the inputted image
   async function classifyImage(image) {
+    const version = "Origenal";
+    const loadedModel = await loadModel(version);
+    setModel(loadedModel);
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
     } else {
       setLoading(true);
 
       try {
-        const loadedModel = await loadModel();
-        setModel(loadedModel);
         const result = await getPrediction(image);
         console.log(result);
+        console.log(pickedImage);
 
         setLoading(false);
       } catch (error) {
@@ -181,22 +187,6 @@ const Index = () => {
       setPredictedClass(predictedClassName);
       setConfidenceNumber(roundedConfidence);
 
-      // const sortedProbabilities = probabilities[0]
-      //   .slice()
-      //   .sort((a, b) => b - a);
-      // const top3Predictions = sortedProbabilities
-      //   .slice(0, 3)
-      //   .map((probability) => {
-      //     const predictedClassIndex = probabilities[0].indexOf(probability);
-      //     const predictedClassName = classLabels[predictedClassIndex];
-      //     const confidence = probability;
-      //     const roundedConfidence = Math.round(confidence * 100) + "%";
-      //     return {
-      //       className: predictedClassName,
-      //       confidence: roundedConfidence,
-      //     };
-      //   });
-      // console.log(top3Predictions);
       return {
         "Class Name": predictedClassName,
         "Confidence Number": roundedConfidence,
@@ -262,18 +252,19 @@ const Index = () => {
     );
   }
 
-  const signOut = () => {
-    Auth.signOut();
-  };
+  // const signOut = () => {
+  //   Auth.signOut();
+  // };
 
   return (
-    <>
+    <ScrollView>
       <View style={styles.container}>
-        <View style={styles.button}>
+        {/* <View style={styles.button}>
           <SignoutButton onPress={signOut}>Sign out</SignoutButton>
-        </View>
+        </View> */}
 
         <StatusBar style="auto" />
+        <View style={{ paddingTop: 50 }} />
         <View>
           {/* Icons Container */}
           <View style={styles.icons}>
@@ -293,20 +284,8 @@ const Index = () => {
           <View style={styles.imagePreview}>{imagePreview}</View>
           {/* Dropdown Menu */}
           <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
-          {/* Confidence Number Input */}
-          {/* <View style={{ alignItems: "center" }}>
-            <TextInput
-              placeholder="Confidence Number"
-              keyboardType="numeric"
-              value={confidenceNumber}
-              onChangeText={(value) => setConfidenceNumber(value)}
-            />
-          </View> */}
           {/* Buttons Container */}
           <View style={styles.submitBtn}>
-            {/* Upadte Button */}
-            {/* <SubmitButton >Update</SubmitButton> */}
-            {/* <View style={{ width: 50 }} /> */}
             {/* Classify Button */}
             <SubmitButton onPress={() => classifyImage(pickedImage)}>
               Classify
@@ -337,7 +316,7 @@ const Index = () => {
           </View>
         </View>
       </View>
-    </>
+    </ScrollView>
   );
 };
 
