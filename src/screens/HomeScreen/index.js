@@ -114,8 +114,6 @@ const Index = () => {
       try {
         const result = await getPrediction(image);
         console.log(result);
-        console.log(pickedImage);
-
         setLoading(false);
       } catch (error) {
         setLoading(false);
