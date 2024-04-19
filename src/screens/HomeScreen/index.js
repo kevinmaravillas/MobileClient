@@ -219,11 +219,8 @@ const Index = () => {
         });
 
         // Match server requirements
-        // formData.append("sysLabel", selectedLabel);
-        formData.append("sysLabel", selectedLabel);
+        formData.append("label", selectedLabel);
         formData.append("imgURL", filename);
-        formData.append("userLabel", null);
-        console.log(formData);
         const response = await fetch(serverUrl, {
           method: "POST",
           body: formData,
