@@ -12,28 +12,24 @@ import {
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import * as ImageManipulator from "expo-image-manipulator";
 
 // Getting UUID
 import "react-native-get-random-values";
-// import { v4 as uuidv4 } from "uuid";
 import * as jpeg from "jpeg-js";
 
 // Tensorflow
 import * as tf from "@tensorflow/tfjs";
-import * as tfjs from "@tensorflow/tfjs-react-native";
 
 // Others
 import {
   OutlinedButtons,
-  SignoutButton,
   SubmitButton,
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
 import { SaveModel } from "../../../assets/model/saveModel";
 import { imageLabels } from "../../../assets/imageLabels/imageClasses";
+import Spinner from "react-native-loading-spinner-overlay";
 
 // import { Auth } from "aws-amplify";
 
@@ -51,6 +47,8 @@ const Index = () => {
   // Stores predictions
   const [predictedClass, setPredictedClass] = useState(null);
   const [classLabels, setClassLabels] = useState(null);
+  //loading
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     SaveModel();
@@ -103,7 +101,7 @@ const Index = () => {
 
   // Classifies the inputted image
   async function classifyImage(image) {
-    const version = "Origenal";
+    const version = "Original";
     const loadedModel = await loadModel(version);
     setModel(loadedModel);
     if (!pickedImage) {
@@ -198,7 +196,7 @@ const Index = () => {
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
     } else {
-      Alert.alert("Loading", "Uploading Image...");
+      setIsLoading(true);
       const serverUrl = "http://54.215.250.216:5000/images/unverified";
       try {
         const filename = pickedImage.uri.split("/").pop();
@@ -226,16 +224,19 @@ const Index = () => {
         console.log("Response Text:", responseText);
 
         if (response.ok) {
+          setIsLoading(false);
           // Handle a successful response from the server
           Alert.alert(
             "Upload Success",
             "Image sent to the server successfully"
           );
         } else {
+          setIsLoading(false);
           // Handle an error response from the server
           Alert.alert("Upload Failed", "Failed to send image to the server");
         }
       } catch (error) {
+        setIsLoading(false);
         // Handle network-related errors
         Alert.alert("Network error:", String(error));
       }
@@ -263,6 +264,11 @@ const Index = () => {
 
         <StatusBar style="auto" />
         <View style={{ paddingTop: 50 }} />
+        <Spinner
+          visible={isLoading}
+          textContent={"Uploading Image..."}
+          textStyle={styles.spinnerTextStyle}
+        />
         <View>
           {/* Icons Container */}
           <View style={styles.icons}>
@@ -364,6 +370,9 @@ const styles = StyleSheet.create({
   predictionText: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });
 
