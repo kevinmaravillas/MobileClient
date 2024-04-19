@@ -38,6 +38,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/CustomButton/CustomButton";
+import { modelSelect } from "../SelectorScreen/SelectorScreen";
 
 const Index = () => {
   // Stores images
@@ -109,8 +110,10 @@ const Index = () => {
 
   // Classifies the inputted image
   async function classifyImage(image) {
+    setModelValue(modelSelect());
     const version = "Original";
     const loadedModel = await loadModel(version);
+    console.log(modelValue);
     setModel(loadedModel);
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
@@ -205,7 +208,7 @@ const Index = () => {
       Alert.alert("No image selected", "Please upload an image");
     } else {
       setIsLoading(true);
-      const serverUrl = "http://54.215.250.216:5000/images/unverified";
+      const serverUrl = "http://54.177.43.205:5000/images/unverified";
       try {
         const filename = pickedImage.uri.split("/").pop();
         const formData = new FormData();
@@ -216,9 +219,11 @@ const Index = () => {
         });
 
         // Match server requirements
-        formData.append("Label", selectedLabel);
-        formData.append("imageUrl", filename);
-
+        // formData.append("sysLabel", selectedLabel);
+        formData.append("sysLabel", selectedLabel);
+        formData.append("imgURL", filename);
+        formData.append("userLabel", null);
+        console.log(formData);
         const response = await fetch(serverUrl, {
           method: "POST",
           body: formData,
@@ -228,7 +233,7 @@ const Index = () => {
         });
 
         console.log("Response Status:", response.status);
-        const responseText = await response.text();
+        const responseText = await response.json();
         console.log("Response Text:", responseText);
 
         if (response.ok) {
@@ -283,7 +288,6 @@ const Index = () => {
             <CustomButton
               text="Select model"
               onPress={handleSubmit(onSendPress)}
-              modelSelect={(value) => setModelValue(value)}
             />
           </View>
           <View style={{ width: 30 }} />

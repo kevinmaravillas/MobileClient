@@ -5,9 +5,14 @@ import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/CustomButton/CustomButton";
 
-const SelectorScreen = ({ modelSelect }) => {
+export const modelSelect = (selectedModel) => {
+  // Do whatever you want with the selected value
+  return selectedModel;
+};
+
+const SelectorScreen = () => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(0);
   const [items, setItems] = useState([
     //For New Model
     { label: "Newest Model", value: "New" },
@@ -21,6 +26,8 @@ const SelectorScreen = ({ modelSelect }) => {
   const { control, handleSubmit } = useForm();
   const navigation = useNavigation();
   const onSubmitPress = () => {
+    console.log("Selected value:", modelSelect(value));
+
     navigation.navigate("Home");
   };
 
@@ -44,10 +51,9 @@ const SelectorScreen = ({ modelSelect }) => {
         theme="DARK"
         multiple={false}
         mode="BADGE"
-        // onChangeValue={(item) => {
-        //   setValue(item);
-        //   modelSelect(item);
-        // }}
+        onChangeValue={(item) => {
+          setValue(item);
+        }}
       />
 
       <CustomButton text="Submit" onPress={handleSubmit(onSubmitPress)} />
