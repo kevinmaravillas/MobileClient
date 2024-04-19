@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import React from "react";
 import HomeScreen from "./src/screens/HomeScreen";
-// import Navigation from "./src/navigation";
+import Navigation from "./src/navigation";
 // import { Amplify } from "aws-amplify";
 // import config from "./src/aws-exports";
 
@@ -12,7 +12,7 @@ const App = () => {
   return (
     <>
       <View style={styles.root}>
-        <HomeScreen />
+        <Navigation />
       </View>
     </>
   );

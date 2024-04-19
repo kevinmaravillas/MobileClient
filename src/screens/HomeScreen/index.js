@@ -24,6 +24,7 @@ import * as tf from "@tensorflow/tfjs";
 import {
   OutlinedButtons,
   SubmitButton,
+  SignoutButton,
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
@@ -32,6 +33,11 @@ import { imageLabels } from "../../../assets/imageLabels/imageClasses";
 import Spinner from "react-native-loading-spinner-overlay";
 
 // import { Auth } from "aws-amplify";
+
+// Selecting models
+import { useNavigation } from "@react-navigation/native";
+import { useForm } from "react-hook-form";
+import CustomButton from "../../components/CustomButton/CustomButton";
 
 const Index = () => {
   // Stores images
@@ -49,6 +55,8 @@ const Index = () => {
   const [classLabels, setClassLabels] = useState(null);
   //loading
   const [isLoading, setIsLoading] = useState(false);
+
+  const [modelValue, setModelValue] = useState("");
 
   useEffect(() => {
     SaveModel();
@@ -251,9 +259,16 @@ const Index = () => {
     );
   }
 
-  // const signOut = () => {
-  //   Auth.signOut();
-  // };
+  const signOut = () => {
+    Auth.signOut();
+  };
+
+  // Selection button
+  const { control, handleSubmit } = useForm();
+  const navigation = useNavigation();
+  const onSendPress = () => {
+    navigation.navigate("SelectorScreen");
+  };
 
   return (
     <ScrollView>
@@ -261,9 +276,21 @@ const Index = () => {
         {/* <View style={styles.button}>
           <SignoutButton onPress={signOut}>Sign out</SignoutButton>
         </View> */}
-
+        {/* Select model button */}
         <StatusBar style="auto" />
-        <View style={{ paddingTop: 50 }} />
+        <View style={{ flexDirection: "row", marginRight: 200 }}>
+          <View style={styles.button}>
+            <CustomButton
+              text="Select model"
+              onPress={handleSubmit(onSendPress)}
+              modelSelect={(value) => setModelValue(value)}
+            />
+          </View>
+          <View style={{ width: 30 }} />
+          <View style={{ justifyContent: "center" }}>{modelValue}</View>
+        </View>
+
+        {/* <View style={{ paddingTop: 50 }} /> */}
         <Spinner
           visible={isLoading}
           textContent={"Uploading Image..."}
@@ -286,7 +313,7 @@ const Index = () => {
           </View>
           {/* Image Preview */}
           <View style={styles.imagePreview}>{imagePreview}</View>
-          {/* Dropdown Menu */}
+          {/* Labels Menu */}
           <ImageLabels onLabelSelect={(label) => setSelectedLabel(label)} />
           {/* Buttons Container */}
           <View style={styles.submitBtn}>
@@ -357,9 +384,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    marginBottom: 15,
-    marginLeft: 30,
-    alignSelf: "flex-start",
+    // marginBottom: 15,
+    // marginLeft: 30,
+    // alignSelf: "flex-start",
   },
   predictionContainer: {
     justifyContent: "center",
@@ -373,6 +400,11 @@ const styles = StyleSheet.create({
   },
   spinnerTextStyle: {
     color: "#FFF",
+  },
+  root: {
+    marginBottom: 5,
+    justifyContent: "center",
+    flexDirection: "row",
   },
 });
 
