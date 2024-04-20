@@ -38,7 +38,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/CustomButton/CustomButton";
-import { modelSelect } from "../SelectorScreen/SelectorScreen";
+import { getSelectedModel } from "../SelectorScreen/SelectorScreen";
 
 const Index = () => {
   // Stores images
@@ -60,7 +60,6 @@ const Index = () => {
   const [modelValue, setModelValue] = useState("");
 
   useEffect(() => {
-    SaveModel();
     const loadTFModel = async () => {
       const version = "New";
       const loadedModel = await loadModel(version);
@@ -70,8 +69,14 @@ const Index = () => {
       const loadedLabels = await imageLabels();
       setClassLabels(loadedLabels);
     };
+    const getModelLabels = async () => {
+      const loadedModelLabels = await getSelectedModel();
+      setModelValue(loadedModelLabels);
+    };
+    SaveModel();
     loadTFModel();
     getClassLabels();
+    // getModelLabels();
   }, []);
 
   // Handling Camera Functionality
@@ -86,7 +91,7 @@ const Index = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
-      aspect: [1, 1],
+      // aspect: [1, 1],
     });
 
     if (!image.canceled) {
@@ -110,10 +115,11 @@ const Index = () => {
 
   // Classifies the inputted image
   async function classifyImage(image) {
-    setModelValue(modelSelect());
     const version = "Original";
-    const loadedModel = await loadModel(version);
+    const modelVersion = await getSelectedModel();
+    setModelValue(modelVersion);
     console.log(modelValue);
+    const loadedModel = await loadModel(version);
     setModel(loadedModel);
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
@@ -177,7 +183,6 @@ const Index = () => {
       const source = { uri: image.uri };
       const imageTensor = await imageToTensor(source);
       const prediction = await model.predict(imageTensor);
-      console.log(prediction);
       const probabilities = await prediction.array();
 
       // Find the index of the class with the highest probability
@@ -288,7 +293,7 @@ const Index = () => {
             />
           </View>
           <View style={{ width: 30 }} />
-          <View style={{ justifyContent: "center" }}>{modelValue}</View>
+          {/* <View style={{ justifyContent: "center" }}>{modelValue}</View> */}
         </View>
 
         {/* <View style={{ paddingTop: 50 }} /> */}
