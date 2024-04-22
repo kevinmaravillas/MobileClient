@@ -35,49 +35,62 @@ import Spinner from "react-native-loading-spinner-overlay";
 // import { Auth } from "aws-amplify";
 
 // Selecting models
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/CustomButton/CustomButton";
-import { getSelectedModel } from "../SelectorScreen/SelectorScreen";
 
 const Index = () => {
+  // route to access from ScreenSelector.js
+  const route = useRoute();
+  // modelValue starts with "New" because route is undefined at start
+  const { modelValue = "New" } = route.params || {};
+
   // Stores images
   const [pickedImage, setPickedImage] = useState(null);
   // Stores labels
   const [selectedLabel, setSelectedLabel] = useState(0);
   // Stores model
   const [model, setModel] = useState(null);
-  // Loading process
-  const [loading, setLoading] = useState(false);
+
   // Stores confidence number
   const [confidenceNumber, setConfidenceNumber] = useState(null);
   // Stores predictions
   const [predictedClass, setPredictedClass] = useState(null);
+  // Stores class labels
   const [classLabels, setClassLabels] = useState(null);
-  //loading
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [modelValue, setModelValue] = useState("");
-
+  // Loading process
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  // Loading Process
+  const [uploadLoading, setUploadLoading] = useState(false);
+  // Model Saving status
+  const [isSaving, setIsSaving] = useState(false);
+  // Label loading status
+  const [labelLoading, setLabelLoading] = useState(false);
+  
   useEffect(() => {
-    const loadTFModel = async () => {
-      const version = "New";
-      const loadedModel = await loadModel(version);
-      setModel(loadedModel);
-    };
-    const getClassLabels = async () => {
+    const loadModelAndLabels = async () => {
+      // Load class labels
+      setLabelLoading(true);
       const loadedLabels = await imageLabels();
       setClassLabels(loadedLabels);
+      setLabelLoading(false);
+
+      if (modelValue) {
+        const loadedModel = await loadModel(modelValue);
+        setModel(loadedModel);
+      }
     };
-    const getModelLabels = async () => {
-      const loadedModelLabels = await getSelectedModel();
-      setModelValue(loadedModelLabels);
+    loadModelAndLabels();
+  }, [modelValue]);
+
+  useEffect(() => {
+    const saveModels = async () => {
+      setIsSaving(true);
+      await SaveModel(); // Assuming saveModel is the correct function name
+      setIsSaving(false);
     };
-    SaveModel();
-    loadTFModel();
-    getClassLabels();
-    // getModelLabels();
-  }, []);
+    saveModels();
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   // Handling Camera Functionality
   async function takeImageHandler() {
@@ -115,23 +128,19 @@ const Index = () => {
 
   // Classifies the inputted image
   async function classifyImage(image) {
-    const version = "Original";
-    const modelVersion = await getSelectedModel();
-    setModelValue(modelVersion);
-    console.log(modelValue);
-    const loadedModel = await loadModel(version);
+    const loadedModel = await loadModel(modelValue);
     setModel(loadedModel);
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
     } else {
-      setLoading(true);
+      setPredictionLoading(true);
 
       try {
         const result = await getPrediction(image);
         console.log(result);
-        setLoading(false);
+        setPredictionLoading(false);
       } catch (error) {
-        setLoading(false);
+        setPredictionLoading(false);
         console.log(error);
       }
     }
@@ -212,7 +221,7 @@ const Index = () => {
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
     } else {
-      setIsLoading(true);
+      setUploadLoading(true);
       const serverUrl = "http://54.177.43.205:5000/images/unverified";
       try {
         const filename = pickedImage.uri.split("/").pop();
@@ -239,19 +248,19 @@ const Index = () => {
         console.log("Response Text:", responseText);
 
         if (response.ok) {
-          setIsLoading(false);
+          setUploadLoading(false);
           // Handle a successful response from the server
           Alert.alert(
             "Upload Success",
             "Image sent to the server successfully"
           );
         } else {
-          setIsLoading(false);
+          setUploadLoading(false);
           // Handle an error response from the server
           Alert.alert("Upload Failed", "Failed to send image to the server");
         }
       } catch (error) {
-        setIsLoading(false);
+        setUploadLoading(false);
         // Handle network-related errors
         Alert.alert("Network error:", String(error));
       }
@@ -280,28 +289,47 @@ const Index = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        {/* <View style={styles.button}>
-          <SignoutButton onPress={signOut}>Sign out</SignoutButton>
-        </View> */}
-        {/* Select model button */}
         <StatusBar style="auto" />
-        <View style={{ flexDirection: "row", marginRight: 200 }}>
-          <View style={styles.button}>
+        {/* Loading Overlay for Saving, Uploading and Labels */}
+        <Spinner
+          visible={isSaving}
+          textContent={"Saving Models..."}
+          textStyle={styles.spinnerTextStyle}
+        />
+        <Spinner
+          visible={labelLoading}
+          textContent={"Labels Loading..."}
+          textStyle={styles.spinnerTextStyle}
+        />
+        <Spinner
+          visible={uploadLoading}
+          textContent={"Uploading Image..."}
+          textStyle={styles.spinnerTextStyle}
+        />
+
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 20,
+          }}
+        >
+          {/* Select model button */}
+          <View>
             <CustomButton
               text="Select model"
               onPress={handleSubmit(onSendPress)}
             />
           </View>
-          <View style={{ width: 30 }} />
-          {/* <View style={{ justifyContent: "center" }}>{modelValue}</View> */}
+          <View style={{ width: 10 }} />
+          <View style={{ flex: 1 }}>
+            {/* Current Model Version */}
+            <Text>Selected Model: {modelValue} </Text>
+          </View>
         </View>
 
-        {/* <View style={{ paddingTop: 50 }} /> */}
-        <Spinner
-          visible={isLoading}
-          textContent={"Uploading Image..."}
-          textStyle={styles.spinnerTextStyle}
-        />
+        {/* Body */}
         <View>
           {/* Icons Container */}
           <View style={styles.icons}>
@@ -333,18 +361,21 @@ const Index = () => {
               Upload
             </SubmitButton>
           </View>
+
           <View style={{ paddingTop: 15 }}></View>
+
+          {/* Prediction/Confidence Section */}
           <View style={styles.predictionContainer}>
             <Text style={styles.predictionText}>
               Prediction:{" "}
-              {loading ? (
+              {predictionLoading ? (
                 <ActivityIndicator size="large" color="#999999" />
               ) : (
                 predictedClass
               )}
               {"\n"}
               Confidence:{" "}
-              {loading ? (
+              {predictionLoading ? (
                 <ActivityIndicator size="large" color="#999999" />
               ) : (
                 confidenceNumber
@@ -389,11 +420,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 5,
   },
-  button: {
-    // marginBottom: 15,
-    // marginLeft: 30,
-    // alignSelf: "flex-start",
-  },
   predictionContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -405,7 +431,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   spinnerTextStyle: {
-    color: "#FFF",
+    color: "#FFFFFF",
   },
   root: {
     marginBottom: 5,

@@ -4,25 +4,25 @@ import { asyncStorageIO } from "@tensorflow/tfjs-react-native";
 export const SaveModel = async () => {
   try {
     await tf.ready();
-    const Newmodel = await tf.loadLayersModel(
+    const newModel = await tf.loadLayersModel(
       "https://cysun.org/public/layers_model2/model.json"
     );
 
-    await Newmodel.save(asyncStorageIO("customs"));
+    await newModel.save(asyncStorageIO("customs"));
     console.log("New model saved");
 
-    const Originalmodel = await tf.loadLayersModel(
+    const originalModel = await tf.loadLayersModel(
       "https://cysun.org/public/layers_model2/model.json"
     );
 
-    await Originalmodel.save(asyncStorageIO("Original"));
+    await originalModel.save(asyncStorageIO("Original"));
     console.log("Original model saved");
 
-    const Oldmodel = await tf.loadLayersModel(
+    const oldModel = await tf.loadLayersModel(
       "https://cysun.org/public/layers_model2/model.json"
     );
 
-    await Oldmodel.save(asyncStorageIO("Old"));
+    await oldModel.save(asyncStorageIO("Old"));
     console.log("Old model saved");
   } catch (e) {
     console.log(e);
