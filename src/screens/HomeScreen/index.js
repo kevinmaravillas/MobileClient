@@ -24,7 +24,6 @@ import * as tf from "@tensorflow/tfjs";
 import {
   OutlinedButtons,
   SubmitButton,
-  SignoutButton,
 } from "../../components/Camera/OutlinedButtons";
 import ImageLabels from "../../components/Camera/ImageLabels";
 import { loadModel } from "../../../assets/model/model";
