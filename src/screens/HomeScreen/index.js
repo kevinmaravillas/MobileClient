@@ -31,8 +31,6 @@ import { SaveModel } from "../../../assets/model/saveModel";
 import { imageLabels } from "../../../assets/imageLabels/imageClasses";
 import Spinner from "react-native-loading-spinner-overlay";
 
-// import { Auth } from "aws-amplify";
-
 // Selecting models
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
@@ -42,7 +40,7 @@ const Index = () => {
   // route to access from ScreenSelector.js
   const route = useRoute();
   // modelValue starts with "New" because route is undefined at start
-  const { modelValue = "New" } = route.params || {};
+  const { modelValue = "1.0.0" } = route.params || {};
 
   // Stores images
   const [pickedImage, setPickedImage] = useState(null);
@@ -65,7 +63,8 @@ const Index = () => {
   const [isSaving, setIsSaving] = useState(false);
   // Label loading status
   const [labelLoading, setLabelLoading] = useState(false);
-  
+  const [selectedVersion, setSelectedVersion] = useState("");
+
   useEffect(() => {
     const loadModelAndLabels = async () => {
       // Load class labels
@@ -80,16 +79,22 @@ const Index = () => {
       }
     };
     loadModelAndLabels();
-  }, [modelValue]);
-
-  useEffect(() => {
     const saveModels = async () => {
       setIsSaving(true);
       await SaveModel(); // Assuming saveModel is the correct function name
       setIsSaving(false);
     };
     saveModels();
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, [modelValue]);
+
+  // useEffect(() => {
+  //   const saveModels = async () => {
+  //     setIsSaving(true);
+  //     await SaveModel(); // Assuming saveModel is the correct function name
+  //     setIsSaving(false);
+  //   };
+  //   saveModels();
+  // }, []); // Empty dependency array ensures this effect runs only once on mount
 
   // Handling Camera Functionality
   async function takeImageHandler() {
@@ -324,7 +329,7 @@ const Index = () => {
           <View style={{ width: 10 }} />
           <View style={{ flex: 1 }}>
             {/* Current Model Version */}
-            <Text>Selected Model: {modelValue} </Text>
+            <Text>Model Version: {modelValue} </Text>
           </View>
         </View>
 

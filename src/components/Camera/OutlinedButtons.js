@@ -22,18 +22,18 @@ function SubmitButton({ onPress, children }) {
     </Pressable>
   );
 }
-function SignoutButton({ onPress, children }) {
+function CheckVersionButton({ onPress, icon }) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.signout, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.checkversion, pressed && styles.pressed]}
       onPress={onPress}
     >
-      <Text style={styles.submitTxt}>{children}</Text>
+      <Ionicons style={styles.icon} name={icon} size={25} color="#000000" />
     </Pressable>
   );
 }
 
-export { OutlinedButtons, SubmitButton, SignoutButton };
+export { OutlinedButtons, SubmitButton, CheckVersionButton };
 
 const styles = StyleSheet.create({
   button: {
@@ -64,12 +64,12 @@ const styles = StyleSheet.create({
   },
   submitTxt: {
     color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
-  signout: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    margin: 4,
-    backgroundColor: "red",
-    borderRadius: 7,
+  checkversion: {
+    padding: 11,
+    backgroundColor: "#636363",
+    borderRadius: 5,
   },
 });

@@ -1,9 +1,12 @@
 import * as tf from "@tensorflow/tfjs";
 import { asyncStorageIO } from "@tensorflow/tfjs-react-native";
+import { version } from "react";
 
 export const SaveModel = async () => {
   try {
     await tf.ready();
+
+    const modelURL = `http://54.177.43.205:5000/models/release/${version}`;
     const newModel = await tf.loadLayersModel(
       "https://cysun.org/public/layers_model2/model.json"
     );
