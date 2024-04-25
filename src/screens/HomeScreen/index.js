@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
+
 // Expo
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
@@ -48,7 +50,6 @@ const Index = () => {
   const [selectedLabel, setSelectedLabel] = useState(0);
   // Stores model
   const [model, setModel] = useState(null);
-
   // Stores confidence number
   const [confidenceNumber, setConfidenceNumber] = useState(null);
   // Stores predictions
@@ -61,17 +62,27 @@ const Index = () => {
   const [uploadLoading, setUploadLoading] = useState(false);
   // Model Saving status
   const [isSaving, setIsSaving] = useState(false);
-  // Label loading status
-  const [labelLoading, setLabelLoading] = useState(false);
-  const [selectedVersion, setSelectedVersion] = useState("");
+  // Wifi Status
+  const [wifiConnected, setWifiConnected] = useState(true);
+
+  // Network Info
+  useEffect(() => {
+    // Subscribe to network connectivity changes
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setWifiConnected(state.isConnected && state.type === "wifi");
+    });
+
+    return () => {
+      // Unsubscribe from network connectivity changes when component unmounts
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const loadModelAndLabels = async () => {
       // Load class labels
-      setLabelLoading(true);
       const loadedLabels = await imageLabels();
       setClassLabels(loadedLabels);
-      setLabelLoading(false);
 
       if (modelValue) {
         const loadedModel = await loadModel(modelValue);
@@ -81,20 +92,11 @@ const Index = () => {
     loadModelAndLabels();
     const saveModels = async () => {
       setIsSaving(true);
-      await SaveModel(); // Assuming saveModel is the correct function name
+      await SaveModel(modelValue);
       setIsSaving(false);
     };
     saveModels();
   }, [modelValue]);
-
-  // useEffect(() => {
-  //   const saveModels = async () => {
-  //     setIsSaving(true);
-  //     await SaveModel(); // Assuming saveModel is the correct function name
-  //     setIsSaving(false);
-  //   };
-  //   saveModels();
-  // }, []); // Empty dependency array ensures this effect runs only once on mount
 
   // Handling Camera Functionality
   async function takeImageHandler() {
@@ -224,6 +226,12 @@ const Index = () => {
   async function sendImageToServer(pickedImage) {
     if (!pickedImage) {
       Alert.alert("No image selected", "Please upload an image");
+    } else if (!wifiConnected) {
+      Alert.alert(
+        "No Wi-Fi Connection",
+        "Please connect to Wi-Fi to upload image."
+      );
+      return;
     } else {
       setUploadLoading(true);
       const serverUrl = "http://54.177.43.205:5000/images/unverified";
@@ -279,10 +287,6 @@ const Index = () => {
     );
   }
 
-  const signOut = () => {
-    Auth.signOut();
-  };
-
   // Selection button
   const { control, handleSubmit } = useForm();
   const navigation = useNavigation();
@@ -298,11 +302,6 @@ const Index = () => {
         <Spinner
           visible={isSaving}
           textContent={"Saving Models..."}
-          textStyle={styles.spinnerTextStyle}
-        />
-        <Spinner
-          visible={labelLoading}
-          textContent={"Labels Loading..."}
           textStyle={styles.spinnerTextStyle}
         />
         <Spinner
@@ -329,7 +328,7 @@ const Index = () => {
           <View style={{ width: 10 }} />
           <View style={{ flex: 1 }}>
             {/* Current Model Version */}
-            <Text>Model Version: {modelValue} </Text>
+            <Text>Model: {modelValue} </Text>
           </View>
         </View>
 

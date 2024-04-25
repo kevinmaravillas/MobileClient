@@ -5,38 +5,71 @@ import { useNavigation } from "@react-navigation/native";
 import { useForm } from "react-hook-form";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { CheckVersionButton } from "../../components/Camera/OutlinedButtons";
+import NetInfo from "@react-native-community/netinfo";
 
 const SelectorScreen = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("1.0.0");
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([{ label: "v1.0.0", value: "1.0.0" }]);
 
   const [currentVersion, setCurrentVersion] = useState(""); // State to store current version
+  const [wifiConnected, setWifiConnected] = useState(true);
 
+  // useEffect(() => {
+  //   const unsubscribeFocus = navigation.addListener("focus", () => {
+  //     // Fetch the version only if the version list is empty
+  //     if (items.length === 0) {
+  //       fetchVersion();
+  //     }
+  //   });
+
+  //   return unsubscribeFocus;
+  // }, [navigation]);
+
+  // Network Info
   useEffect(() => {
-    const unsubscribeFocus = navigation.addListener("focus", () => {
-      // Fetch the version only if the version list is empty
-      if (items.length === 0) {
-        fetchVersion();
-      }
+    // Subscribe to network connectivity changes
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setWifiConnected(state.isConnected && state.type === "wifi");
     });
 
-    return unsubscribeFocus;
-  }, [navigation]);
+    return () => {
+      // Unsubscribe from network connectivity changes when component unmounts
+      unsubscribe();
+    };
+  }, []);
 
   const fetchVersion = async () => {
     try {
-      const response = await fetch(
-        "http://54.177.43.205:5000/models/release/info"
-      );
-      const data = await response.json();
-      const newVersion = data.version;
+      // const response = await fetch(
+      //   "http://54.177.43.205:5000/models/release/info"
+      // );
+      // const data = await response.json();
+      // const newVersion = data.version;
 
-      if (!currentVersion) {
-        // If there's no current version, set the fetched version and show alert
-        setCurrentVersion(newVersion);
-        Alert.alert("Initial Version Set", `Version set to: v${newVersion}`);
-      } else if (newVersion !== currentVersion) {
+      // Check if Wifi connected
+      if (!wifiConnected) {
+        Alert.alert(
+          "No Wi-Fi Connection",
+          "Please connect to Wi-Fi to check for new versions."
+        );
+        return;
+      }
+
+      const newVersion = "1.1.0";
+
+      // Check items list if it doesn't exist, then add
+      // with previous items
+      if (!items.find((item) => item.value === newVersion)) {
+        const newItems = [
+          ...items,
+          { label: `v${newVersion}`, value: newVersion },
+        ];
+
+        setItems(newItems);
+      }
+
+      if (newVersion !== currentVersion) {
         // If there's a current version and it's different from the fetched version, update and show alert
         setCurrentVersion(newVersion);
         Alert.alert("New Version Found", `New version: v${newVersion}`);
@@ -46,7 +79,6 @@ const SelectorScreen = () => {
       }
 
       // Update version list
-      setItems([{ label: "v" + newVersion, value: newVersion }]);
     } catch (error) {
       console.error("Error fetching version:", error);
     }
@@ -58,7 +90,7 @@ const SelectorScreen = () => {
   const onSubmitPress = () => {
     const selectedModel = value;
     console.log("Selected value:", selectedModel);
-    navigation.navigate("Home", { modelValue: selectedModel });
+    navigation.navigate("Home", { modelValue: "v" + selectedModel });
   };
 
   return (
@@ -104,6 +136,5 @@ const styles = StyleSheet.create({
   spinnerTextStyle: {
     color: "#FFFFFF",
   },
-  submitButtonContainer: {},
 });
 export default SelectorScreen;
