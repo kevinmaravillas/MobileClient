@@ -9,24 +9,12 @@ import NetInfo from "@react-native-community/netinfo";
 
 const SelectorScreen = () => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("1.0.0");
   const [items, setItems] = useState([{ label: "v1.0.0", value: "1.0.0" }]);
-
-  const [currentVersion, setCurrentVersion] = useState(""); // State to store current version
+  const [currentVersion, setCurrentVersion] = useState("");
   const [wifiConnected, setWifiConnected] = useState(true);
+  const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   const unsubscribeFocus = navigation.addListener("focus", () => {
-  //     // Fetch the version only if the version list is empty
-  //     if (items.length === 0) {
-  //       fetchVersion();
-  //     }
-  //   });
-
-  //   return unsubscribeFocus;
-  // }, [navigation]);
-
-  // Network Info
   useEffect(() => {
     // Subscribe to network connectivity changes
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -39,11 +27,18 @@ const SelectorScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    fetchAvailableVersions();
+
+    // When the component mounts, set the current version to the selected value
+    setCurrentVersion(value);
+  }, []);
+
   const fetchVersion = async () => {
     try {
       const response = await fetch("http://52.53.235.182/models/release/info");
       const data = await response.json();
-      const newVersion = data.version;
+      const latestVersion = data.version;
 
       // Check if Wifi connected
       if (!wifiConnected) {
@@ -51,28 +46,49 @@ const SelectorScreen = () => {
           "No Wi-Fi Connection",
           "Please connect to Wi-Fi to check for new versions."
         );
-s      }
-      // Check items list if it doesn't exist, then add
-      // with previous items
-      if (!items.find((item) => item.value === newVersion)) {
+        return;
+      }
+
+      if (!items.find((item) => item.value === latestVersion)) {
+        // Update the items array with the latest version
         const newItems = [
           ...items,
-          { label: `v${newVersion}`, value: newVersion },
+          { label: `v${latestVersion}`, value: latestVersion },
         ];
-
         setItems(newItems);
       }
 
-      if (newVersion !== currentVersion) {
-        // If there's a current version and it's different from the fetched version, update and show alert
-        setCurrentVersion(newVersion);
-        Alert.alert("New Version Found", `New version: v${newVersion}`);
+      setCurrentVersion(latestVersion);
+
+      if (latestVersion !== value) {
+        // If the latest version is different from the currently selected version
+        // Set the selected version to the latest version
+        setValue(latestVersion);
+        Alert.alert("New Version Found", `New version: v${latestVersion}`);
       } else {
-        // If there's a current version and it's the same as the fetched version, just show alert
         Alert.alert("No New Version Found", "You're up-to-date!");
       }
+    } catch (error) {
+      console.error("Error fetching version:", error);
+    }
+  };
 
-      // Update version list
+  
+  const fetchAvailableVersions = async () => {
+    try {
+      const response = await fetch("http://52.53.235.182/models/release/info");
+      const data = await response.json();
+      const latestVersion = data.version;
+
+      // Update the items array with all available versions
+      const newItems = [
+        ...items,
+        { label: `v${latestVersion}`, value: latestVersion },
+      ];
+      setItems(newItems);
+
+      // Set the currently selected version as the latest version
+      setCurrentVersion(latestVersion);
     } catch (error) {
       console.error("Error fetching version:", error);
     }
@@ -80,11 +96,10 @@ s      }
 
   // Selection button
   const { control, handleSubmit } = useForm();
-  const navigation = useNavigation();
   const onSubmitPress = () => {
     const selectedModel = value;
-    console.log("Selected value:", selectedModel);
-    navigation.navigate("Home", { modelValue: selectedModel });
+    console.log("Selected value:", value);
+    navigation.navigate("Home", { modelValue: value });
   };
 
   return (
@@ -127,8 +142,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 5,
   },
-  spinnerTextStyle: {
-    color: "#FFFFFF",
-  },
 });
+
 export default SelectorScreen;
