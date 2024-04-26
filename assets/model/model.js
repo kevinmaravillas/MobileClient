@@ -10,9 +10,12 @@ export const loadModel = async (version) => {
     // const final = await tf.loadLayersModel(asyncStorageIO(version));
     // console.log(`${version} model loaded locally`);
 
-    if(version) {
+    if (version === "1.0.0") {
+      final = await tf.loadLayersModel(asyncStorageIO("1.0.0"));
+      console.log(`v1.0.0 load locally`);
+    } else {
       final = await tf.loadLayersModel(asyncStorageIO(version));
-      console.log(`${version} load locally`);
+      console.log(`v${version} load locally`);
     }
 
     // if (version === "New") {

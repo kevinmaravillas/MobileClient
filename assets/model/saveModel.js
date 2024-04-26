@@ -1,21 +1,30 @@
 import * as tf from "@tensorflow/tfjs";
 import { asyncStorageIO } from "@tensorflow/tfjs-react-native";
 
-export const SaveModel = async (version) => {
+export const SaveModel = async (version, originalUrl) => {
   try {
     await tf.ready();
     //cont SaveModel = async(version) => {
-    //const modelURL = `http://54.177.43.205:5000/models/release`;
+    // const modelURL = `http://52.53.235.182/models/release`;
     //const model = await tf.loadLayersModel(modelURL);
     //await model.save(asyncStorageIO(version));
     //console.log(`Model with version ${version} saved`);
     //}
+    //"https://cs3.calstatela.edu/~cs4962stu01/modelh5/model.json"
 
-    const newModel = await tf.loadLayersModel(
-      "https://cysun.org/public/layers_model2/model.json"
-    );
-    await newModel.save(asyncStorageIO(version));
-    console.log(`${version} model saved`);
+    if (version === "1.0.0") {
+      const newModel = await tf.loadLayersModel(originalUrl);
+      await newModel.save(asyncStorageIO("1.0.0"));
+      console.log(`v1.0.0 model saved`);
+    } else {
+      const modelURL = `http://52.53.235.182/models/release`;
+      const newModel = await tf.loadLayersModel(modelURL);
+      await newModel.save(asyncStorageIO(version));
+      console.log(`v${version} model saved`);
+    }
+    // const newModel = await tf.loadLayersModel(updateurl);
+    // await newModel.save(asyncStorageIO(version));
+    // console.log(`${version} model saved`);
 
     // const newModel = await tf.loadLayersModel(
     //   "https://cysun.org/public/layers_model2/model.json"

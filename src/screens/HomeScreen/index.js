@@ -65,6 +65,8 @@ const Index = () => {
   // Wifi Status
   const [wifiConnected, setWifiConnected] = useState(true);
 
+  const Originalurl = "https://cysun.org/public/layers_model2/model.json";
+  let newItem = null;
   // Network Info
   useEffect(() => {
     // Subscribe to network connectivity changes
@@ -92,7 +94,7 @@ const Index = () => {
     loadModelAndLabels();
     const saveModels = async () => {
       setIsSaving(true);
-      await SaveModel(modelValue);
+      await SaveModel(modelValue, Originalurl);
       setIsSaving(false);
     };
     saveModels();
@@ -110,7 +112,7 @@ const Index = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
-      // aspect: [1, 1],
+      aspect: [1, 1],
     });
 
     if (!image.canceled) {
@@ -234,7 +236,7 @@ const Index = () => {
       return;
     } else {
       setUploadLoading(true);
-      const serverUrl = "http://54.177.43.205:5000/images/unverified";
+      const serverUrl = "http://52.53.235.182/images/unverified";
       try {
         const filename = pickedImage.uri.split("/").pop();
         const formData = new FormData();
@@ -258,7 +260,6 @@ const Index = () => {
         console.log("Response Status:", response.status);
         const responseText = await response.json();
         console.log("Response Text:", responseText);
-
         if (response.ok) {
           setUploadLoading(false);
           // Handle a successful response from the server
@@ -328,7 +329,7 @@ const Index = () => {
           <View style={{ width: 10 }} />
           <View style={{ flex: 1 }}>
             {/* Current Model Version */}
-            <Text>Model: {modelValue} </Text>
+            <Text>Model: v{modelValue} </Text>
           </View>
         </View>
 

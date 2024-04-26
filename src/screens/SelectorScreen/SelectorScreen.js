@@ -9,7 +9,7 @@ import NetInfo from "@react-native-community/netinfo";
 
 const SelectorScreen = () => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("1.0.0");
+  const [value, setValue] = useState("");
   const [items, setItems] = useState([{ label: "v1.0.0", value: "1.0.0" }]);
 
   const [currentVersion, setCurrentVersion] = useState(""); // State to store current version
@@ -41,11 +41,9 @@ const SelectorScreen = () => {
 
   const fetchVersion = async () => {
     try {
-      // const response = await fetch(
-      //   "http://54.177.43.205:5000/models/release/info"
-      // );
-      // const data = await response.json();
-      // const newVersion = data.version;
+      const response = await fetch("http://52.53.235.182/models/release/info");
+      const data = await response.json();
+      const newVersion = data.version;
 
       // Check if Wifi connected
       if (!wifiConnected) {
@@ -53,11 +51,7 @@ const SelectorScreen = () => {
           "No Wi-Fi Connection",
           "Please connect to Wi-Fi to check for new versions."
         );
-        return;
-      }
-
-      const newVersion = "1.1.0";
-
+s      }
       // Check items list if it doesn't exist, then add
       // with previous items
       if (!items.find((item) => item.value === newVersion)) {
@@ -90,7 +84,7 @@ const SelectorScreen = () => {
   const onSubmitPress = () => {
     const selectedModel = value;
     console.log("Selected value:", selectedModel);
-    navigation.navigate("Home", { modelValue: "v" + selectedModel });
+    navigation.navigate("Home", { modelValue: selectedModel });
   };
 
   return (
