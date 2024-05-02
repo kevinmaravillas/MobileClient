@@ -27,13 +27,6 @@ const SelectorScreen = () => {
     };
   }, []);
 
-  useEffect(() => {
-    fetchAvailableVersions();
-
-    // When the component mounts, set the current version to the selected value
-    setCurrentVersion(value);
-  }, []);
-
   const fetchVersion = async () => {
     try {
       const response = await fetch("http://52.53.235.182/models/release/info");
@@ -73,7 +66,6 @@ const SelectorScreen = () => {
     }
   };
 
-  
   const fetchAvailableVersions = async () => {
     try {
       const response = await fetch("http://52.53.235.182/models/release/info");
