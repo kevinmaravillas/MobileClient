@@ -1,3 +1,5 @@
+<a name="top"></a>
+
 # MobileClient
 MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native. 
 
@@ -5,8 +7,10 @@ MobileClient is a mobile application developed for iOS and Android platforms usi
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
+- [Sponsor](#sponsor)
 - [Demo](#demo)
 
+<a name="overview"></a>
 ## Overview
 It enables the collection and classification of images directly from the phone’s camera or from its photo library. 
 If the automatic classification is not correct, the user can relabel it, potentially with a label that has never been seen before. 
@@ -24,14 +28,16 @@ mobile client to exchange images, labels, and updated models.
 - Find solution for Android support, currently works for iOS
 - Peer-to-peer communication with other devices
 
+<a name="features"></a>
 ## Features
 - **Image Classification**: Utilizes the device's camera and photo gallery to pick an image, crop it, and classify it.
 - **Server Interaction**: If the classification is incorrect, the app allows users to upload the image and the correct label to the server for further analysis.
 - **Model Selection**: Users can change between classification models, and a refresh button checks for new model versions.
 - **Offline Support**: The app disables image uploading and model version checking when the network is offline.
 
-[Go back to top](#MobileClient)
+[Go back to top](#top)
 ## Getting Started
+<a name="installation"></a>
 ### Installation
 To run the MobileClient application locally on your development machine, follow these steps:
 
@@ -51,11 +57,13 @@ To run the MobileClient application locally on your development machine, follow 
    #or
    npx expo start
    ```
-[Go back to top](#MobileClient)
+[Go back to top](#top)
+<a name="Sponsor"></a>
 ## Sponsor
 Proudly sponsored by NSIN/ICT USC
 
+<a name="demo"></a>
 ## Demo
 You can view a demo of the Mobile Client app by clicking on the image which leads to YouTube </br>
 [![Mobile Client Demo Vid](https://img.youtube.com/vi/0YlV9B0ICTQ/0.jpg)](https://www.youtube.com/watch?v=0YlV9B0ICTQ)</br>
-[Go back to top](#MobileClient)
+[Go back to top](#top)
