@@ -1,8 +1,6 @@
-<a name="top"></a>
-
 # MobileClient
+<a name="top"></a>
 MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native. 
-
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
