@@ -1,6 +1,6 @@
 # MobileClient
 <a name="top"></a>
-MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native. 
+MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
@@ -16,10 +16,9 @@ The server and its web client allow users to retrain/fine-tune the classificatio
 Alternatively, when communication with the server is not possible, the mobile client will attempt to use peer-to-peer communication with another 
 mobile client to exchange images, labels, and updated models.
 
-### Built With
-- React Native
-- Expo Go
-- Tensorflow
+### MINDE Systems
+- [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
+- [Server](https://github.com/Chaoward/MlNDE_Server/)
 
 ### Future Goals
 - Find solution for Android support, currently works for iOS
@@ -54,7 +53,7 @@ To run the MobileClient application locally on your development machine, follow 
    ```
 [Go back to top](#top)
 ## Sponsor
-Proudly sponsored by NSIN/ICT USC
+Proudly sponsored by NSIN/ICT USC and Cal State LA Senior Capstone
 
 ## Demo
 You can view a demo of the Mobile Client app by clicking on the image which leads to YouTube </br>
