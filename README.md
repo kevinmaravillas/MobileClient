@@ -16,6 +16,8 @@ https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4
 ### Powerpoint Demo Slides:
 https://docs.google.com/presentation/d/13EFhmbbCMPtfYBnF4iBhyzKesb5ix88vZ7o3OJCPOOM/edit?usp=sharing
 
+
+
 ### MINDE Systems
 - [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
 - [Server](https://github.com/Chaoward/MlNDE_Server/)
