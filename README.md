@@ -10,13 +10,11 @@ The server and its web client allow users to retrain/fine-tune the classificatio
 Alternatively, when communication with the server is not possible, the mobile client will attempt to use peer-to-peer communication with another 
 mobile client to exchange images, labels, and updated models.
 
-https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4340-8825-408c39df6d38
-
-
-
 ### Future Goals
 - Find solution for Android support, currently works for iOS
 - Peer-to-peer communication with other devices
+
+https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4340-8825-408c39df6d38
 
 ### MINDE Systems
 - [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
