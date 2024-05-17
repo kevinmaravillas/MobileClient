@@ -1,6 +1,6 @@
 # MINDE MobileClient
 <a name="top"></a>
-MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
+Machine Learning for Network-Denied Environments (MINDE) is a machine learning project based on network-denied environments, aiming to combine cloud-based servers and web clients with mobile clients. MobileClient is part of the project which is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
 
 ## MobileClient Overview
 It enables the collection and classification of images directly from the phone’s camera or from its photo library. 
