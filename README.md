@@ -1,12 +1,6 @@
 # MINDE MobileClient
 <a name="top"></a>
 MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Sponsor](#sponsor)
-- [Demo](#demo)
 
 ## Overview
 It enables the collection and classification of images directly from the phone’s camera or from its photo library. 
@@ -16,13 +10,24 @@ The server and its web client allow users to retrain/fine-tune the classificatio
 Alternatively, when communication with the server is not possible, the mobile client will attempt to use peer-to-peer communication with another 
 mobile client to exchange images, labels, and updated models.
 
-### MINDE Systems
-- [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
-- [Server](https://github.com/Chaoward/MlNDE_Server/)
+https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4340-8825-408c39df6d38
+
+
 
 ### Future Goals
 - Find solution for Android support, currently works for iOS
 - Peer-to-peer communication with other devices
+
+### MINDE Systems
+- [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
+- [Server](https://github.com/Chaoward/MlNDE_Server/)
+
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Sponsor](#sponsor)
+- [Demo](#demo)
 
 ## Features
 - **Image Classification**: Utilizes the device's camera and photo gallery to pick an image, crop it, and classify it.
