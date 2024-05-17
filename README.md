@@ -20,12 +20,6 @@ https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4
 - [Web Client](https://github.com/Chaoward/Senior-Cap_WebClient)
 - [Server](https://github.com/Chaoward/MlNDE_Server/)
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Sponsor](#sponsor)
-- [Demo](#demo)
 
 ## Features
 - **Image Classification**: Utilizes the device's camera and photo gallery to pick an image, crop it, and classify it.
@@ -33,7 +27,6 @@ https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4
 - **Model Selection**: Users can change between classification models, and a refresh button checks for new model versions.
 - **Offline Support**: The app disables image uploading and model version checking when the network is offline.
 
-[Go back to top](#top)
 ## Getting Started
 ### Installation
 To run the MobileClient application locally on your development machine, follow these steps:
@@ -54,11 +47,6 @@ To run the MobileClient application locally on your development machine, follow 
    #or
    npx expo start
    ```
-[Go back to top](#top)
 ## Sponsor
 Proudly sponsored by NSIN/ICT USC and Cal State LA Senior Capstone
 
-## Demo
-You can view a demo of the Mobile Client app by clicking on the image which leads to YouTube </br>
-[![Mobile Client Demo Vid](https://img.youtube.com/vi/0YlV9B0ICTQ/0.jpg)](https://www.youtube.com/watch?v=0YlV9B0ICTQ)</br>
-[Go back to top](#top)
