@@ -2,7 +2,7 @@
 <a name="top"></a>
 MobileClient is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
 
-## Overview
+## MobileClient Overview
 It enables the collection and classification of images directly from the phone’s camera or from its photo library. 
 If the automatic classification is not correct, the user can relabel it, potentially with a label that has never been seen before. 
 When a network connection is available, the mobile client will upload new images to the server along with any user-supplied labels. 
