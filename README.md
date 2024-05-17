@@ -3,12 +3,9 @@
 Machine Learning for Network-Denied Environments (MINDE) is a machine learning project based on network-denied environments, aiming to combine cloud-based servers and web clients with mobile clients. MobileClient is part of the project which is a mobile application developed for iOS and Android platforms using Expo Go React Native and Expo Go. 
 
 ## MobileClient Overview
-It enables the collection and classification of images directly from the phone’s camera or from its photo library. 
-If the automatic classification is not correct, the user can relabel it, potentially with a label that has never been seen before. 
-When a network connection is available, the mobile client will upload new images to the server along with any user-supplied labels. 
-The server and its web client allow users to retrain/fine-tune the classification model with this new data and send the new model back to the mobile client. 
-Alternatively, when communication with the server is not possible, the mobile client will attempt to use peer-to-peer communication with another 
-mobile client to exchange images, labels, and updated models.
+   Moblie Client works by collecting and sorting images from your phone's camera or photo library. If the automatic classification is incorrect, the user can relabel it, perhaps with labels they have never seen before.
+   When a network connection is available, the mobile client uploads the new image to the server along with the user-supplied tags. The server and its web client allow the user to retrain/fine-tune the classification model using this new data and send the new model back to the mobile client.
+   When unable to communicate with the server, the mobile client will attempt to exchange images, labels, and updated models using peer-to-peer communication with another mobile client.
 
 ### Video Demo:
 https://github.com/kevinmaravillas/MobileClient/assets/146474106/88bdbc7c-3053-4340-8825-408c39df6d38
